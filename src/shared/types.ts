@@ -1,12 +1,9 @@
 export type UUID = string
-export type HASH = string
 export type Colour = string
 
-export type Language = "zh" | "en" | "fr"
-
-export type Background =
+export type View =
   | {
-      type: "colour"
+      type: "solid-colour"
       colour: Colour
     }
   | {
@@ -14,48 +11,42 @@ export type Background =
       uri: URL
     }
 
-export type Icon =
-  | {
-      type: "colour"
-      colour: Colour
-    }
-  | {
-      type: "icon"
-      uri: URL
-    }
-
-export type Customizations = {
-  collapsedFolders: UUID[]
-  showSearch: boolean
+export type Bookmark = {
+  id: UUID
+  title: string
+  uri: URL
+  display: View // NON-EDITABLE
 }
 
-export type Dashboard = {
-  name: string
-  background: Background
-  allowReadOnly: boolean
-  folders: UUID[]
-  pinnedResources: UUID[]
-} & Customizations
-
-export type Sticky = {
+export type Note = {
   id: UUID
   timestamp: Date
   content: string
 }
 
-export type Bookmark = {
+export type BookmarkCollections = {
   id: UUID
-  title: string
-  uri: URL
-  display: Icon | undefined
+  name: string
+  bookmarks: Bookmark[]
 }
 
-export type Folder = { id: UUID; name: string; colour: Colour } & (
-  | { type: "stickies"; items: Sticky[] }
-  | { type: "bookmarks"; items: Bookmark[] })
+export type NoteCollections = {
+  id: UUID
+  name: string
+  notes: Note[]
+}
+
+export type Dashboard = {
+  path: string // UNIQUE
+  title: string
+  background: View
+  allowReadOnly: boolean
+  bookmarkCollections: UUID[] //NON-EMPTY
+  noteCollections: UUID[] //NON-EMPTY
+}
 
 export type Global = {
+  bookmarkCollections: BookmarkCollections[]
+  noteCollections: NoteCollections[]
   dashboards: Dashboard[]
-  folders: Folder[]
-  language: Language
 }
