@@ -2,6 +2,8 @@ export type UUID = string
 export type HASH = string
 export type Colour = string
 
+export type Language = "zh" | "en" | "fr"
+
 export type Background =
   | {
       type: "colour"
@@ -27,13 +29,12 @@ export type Customizations = {
   showSearch: boolean
 }
 
-export type User = {
-  username: string
-  password: HASH
+export type Dashboard = {
+  name: string
   background: Background
   allowReadOnly: boolean
   folders: UUID[]
-  pinned: UUID[]
+  pinnedResources: UUID[]
 } & Customizations
 
 export type Sticky = {
@@ -52,3 +53,9 @@ export type Bookmark = {
 export type Folder = { id: UUID; name: string; colour: Colour } & (
   | { type: "stickies"; items: Sticky[] }
   | { type: "bookmarks"; items: Bookmark[] })
+
+export type Global = {
+  dashboards: Dashboard[]
+  folders: Folder[]
+  language: Language
+}
