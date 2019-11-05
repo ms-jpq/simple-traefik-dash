@@ -37,15 +37,18 @@ export type NoteCollections = {
 }
 
 export type Dashboard = {
+  id: UUID
   path: string // UNIQUE
   title: string
   background: View
   allowReadOnly: boolean
+  pinnedItems: UUID[]
   bookmarkCollections: UUID[] //NON-EMPTY
   noteCollections: UUID[] //NON-EMPTY
 }
 
 export type Global = {
+  id: UUID
   bookmarkCollections: BookmarkCollections[]
   noteCollections: NoteCollections[]
   dashboards: Dashboard[]

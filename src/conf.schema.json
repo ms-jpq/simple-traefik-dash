@@ -1,262 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "Background": {
-      "anyOf": [
-        {
-          "properties": {
-            "colour": {
-              "type": "string"
-            },
-            "type": {
-              "enum": ["colour"],
-              "type": "string"
-            }
-          },
-          "type": "object"
-        },
-        {
-          "properties": {
-            "type": {
-              "enum": ["image"],
-              "type": "string"
-            },
-            "uri": {
-              "$ref": "#/definitions/URL"
-            }
-          },
-          "type": "object"
-        }
-      ]
-    },
-    "Bookmark": {
-      "properties": {
-        "display": {
-          "anyOf": [
-            {
-              "properties": {
-                "colour": {
-                  "type": "string"
-                },
-                "type": {
-                  "enum": ["colour"],
-                  "type": "string"
-                }
-              },
-              "type": "object"
-            },
-            {
-              "properties": {
-                "type": {
-                  "enum": ["icon"],
-                  "type": "string"
-                },
-                "uri": {
-                  "$ref": "#/definitions/URL"
-                }
-              },
-              "type": "object"
-            }
-          ]
-        },
-        "id": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "uri": {
-          "$ref": "#/definitions/URL"
-        }
-      },
-      "type": "object"
-    },
-    "Colour": {
-      "type": "string"
-    },
-    "Customizations": {
-      "properties": {
-        "collapsedFolders": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        },
-        "showSearch": {
-          "type": "boolean"
-        }
-      },
-      "type": "object"
-    },
-    "Folder": {
-      "anyOf": [
-        {
-          "allOf": [
-            {
-              "properties": {
-                "colour": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                }
-              },
-              "type": "object"
-            },
-            {
-              "properties": {
-                "items": {
-                  "items": {
-                    "properties": {
-                      "content": {
-                        "type": "string"
-                      },
-                      "id": {
-                        "type": "string"
-                      },
-                      "timestamp": {
-                        "description": "Enables basic storage and retrieval of dates and times.",
-                        "format": "date-time",
-                        "type": "string"
-                      }
-                    },
-                    "type": "object"
-                  },
-                  "type": "array"
-                },
-                "type": {
-                  "enum": ["stickies"],
-                  "type": "string"
-                }
-              },
-              "type": "object"
-            }
-          ]
-        },
-        {
-          "allOf": [
-            {
-              "properties": {
-                "colour": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                }
-              },
-              "type": "object"
-            },
-            {
-              "properties": {
-                "items": {
-                  "items": {
-                    "properties": {
-                      "display": {
-                        "anyOf": [
-                          {
-                            "properties": {
-                              "colour": {
-                                "type": "string"
-                              },
-                              "type": {
-                                "enum": ["colour"],
-                                "type": "string"
-                              }
-                            },
-                            "type": "object"
-                          },
-                          {
-                            "properties": {
-                              "type": {
-                                "enum": ["icon"],
-                                "type": "string"
-                              },
-                              "uri": {
-                                "$ref": "#/definitions/URL"
-                              }
-                            },
-                            "type": "object"
-                          }
-                        ]
-                      },
-                      "id": {
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "uri": {
-                        "$ref": "#/definitions/URL"
-                      }
-                    },
-                    "type": "object"
-                  },
-                  "type": "array"
-                },
-                "type": {
-                  "enum": ["bookmarks"],
-                  "type": "string"
-                }
-              },
-              "type": "object"
-            }
-          ]
-        }
-      ]
-    },
-    "HASH": {
-      "type": "string"
-    },
-    "Icon": {
-      "anyOf": [
-        {
-          "properties": {
-            "colour": {
-              "type": "string"
-            },
-            "type": {
-              "enum": ["colour"],
-              "type": "string"
-            }
-          },
-          "type": "object"
-        },
-        {
-          "properties": {
-            "type": {
-              "enum": ["icon"],
-              "type": "string"
-            },
-            "uri": {
-              "$ref": "#/definitions/URL"
-            }
-          },
-          "type": "object"
-        }
-      ]
-    },
-    "Sticky": {
-      "properties": {
-        "content": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "timestamp": {
-          "description": "Enables basic storage and retrieval of dates and times.",
-          "format": "date-time",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
     "URL": {
       "description": "The URL interface represents an object providing static methods used for creating object URLs.",
       "properties": {
@@ -301,81 +45,170 @@
     },
     "URLSearchParams": {
       "type": "object"
+    }
+  },
+  "properties": {
+    "bookmarkCollections": {
+      "items": {
+        "properties": {
+          "bookmarks": {
+            "items": {
+              "properties": {
+                "display": {
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "colour": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "enum": ["solid-colour"],
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": ["image"],
+                          "type": "string"
+                        },
+                        "uri": {
+                          "$ref": "#/definitions/URL"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                },
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "uri": {
+                  "$ref": "#/definitions/URL"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
     },
-    "UUID": {
+    "dashboards": {
+      "items": {
+        "properties": {
+          "allowReadOnly": {
+            "type": "boolean"
+          },
+          "background": {
+            "anyOf": [
+              {
+                "properties": {
+                  "colour": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "enum": ["solid-colour"],
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "type": {
+                    "enum": ["image"],
+                    "type": "string"
+                  },
+                  "uri": {
+                    "$ref": "#/definitions/URL"
+                  }
+                },
+                "type": "object"
+              }
+            ]
+          },
+          "bookmarkCollections": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "id": {
+            "type": "string"
+          },
+          "noteCollections": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "path": {
+            "type": "string"
+          },
+          "pinnedItems": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "id": {
       "type": "string"
     },
-    "User": {
-      "allOf": [
-        {
-          "properties": {
-            "allowReadOnly": {
-              "type": "boolean"
-            },
-            "background": {
-              "anyOf": [
-                {
-                  "properties": {
-                    "colour": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "enum": ["colour"],
-                      "type": "string"
-                    }
-                  },
-                  "type": "object"
+    "noteCollections": {
+      "items": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "notes": {
+            "items": {
+              "properties": {
+                "content": {
+                  "type": "string"
                 },
-                {
-                  "properties": {
-                    "type": {
-                      "enum": ["image"],
-                      "type": "string"
-                    },
-                    "uri": {
-                      "$ref": "#/definitions/URL"
-                    }
-                  },
-                  "type": "object"
+                "id": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "description": "Enables basic storage and retrieval of dates and times.",
+                  "format": "date-time",
+                  "type": "string"
                 }
-              ]
-            },
-            "folders": {
-              "items": {
-                "type": "string"
               },
-              "type": "array"
+              "type": "object"
             },
-            "password": {
-              "type": "string"
-            },
-            "pinned": {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            },
-            "username": {
-              "type": "string"
-            }
-          },
-          "type": "object"
+            "type": "array"
+          }
         },
-        {
-          "properties": {
-            "collapsedFolders": {
-              "items": {
-                "type": "string"
-              },
-              "type": "array"
-            },
-            "showSearch": {
-              "type": "boolean"
-            }
-          },
-          "type": "object"
-        }
-      ]
+        "type": "object"
+      },
+      "type": "array"
     }
-  }
+  },
+  "type": "object"
 }

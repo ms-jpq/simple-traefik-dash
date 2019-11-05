@@ -3,5 +3,7 @@ import { Tab as BookmarksTab } from "./bookmarks-tab/tab"
 import { Tab as CustomizationTab } from "./customizations-tab/tab"
 import "./page.css"
 
-type PageProps = {}
+type PageProps = {
+  readonly: boolean
+}
 const Page = (props: PageProps) => {}

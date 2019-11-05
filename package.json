@@ -2,6 +2,7 @@
   "author": "Fly me to the moon",
   "description": "",
   "devDependencies": {
+    "@types/argparse": "*",
     "@types/compression-webpack-plugin": "*",
     "@types/copy-webpack-plugin": "*",
     "@types/html-webpack-plugin": "*",
