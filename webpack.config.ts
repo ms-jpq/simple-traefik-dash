@@ -16,10 +16,13 @@ const exclude = ["fs", "crypto", "utils", "os"]
 const config: webpack.Configuration = {
   mode,
   entry: [
-    path.resolve(__dirname, "src/client/entry.tsx"),
+    path.resolve(__dirname, "src/client/entry.ts"),
     path.resolve(__dirname, "src/server/entry.ts"),
   ],
-  externals: exclude.reduce((acc, curr) => Object.assign(acc, { [curr]: `root ${curr}` }), {}),
+  externals: exclude.reduce(
+    (acc, curr) => Object.assign(acc, { [curr]: `root ${curr}` }),
+    {},
+  ),
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
@@ -32,7 +35,15 @@ const config: webpack.Configuration = {
       },
       {
         test: /\.tsx?$/,
-        use: ["awesome-typescript-loader", "eslint-loader"],
+        use: [
+          {
+            loader: "awesome-typescript-loader",
+            options: {
+              compiler: "typescript",
+            },
+          },
+          "eslint-loader",
+        ],
         exclude: /node_modules/,
       },
       {
