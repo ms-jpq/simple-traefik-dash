@@ -1,6 +1,6 @@
 import fetch from "node-fetch"
 import { REQ_TIMEOUT, API_ROUTERS } from "../consts"
-import P from "parsimmon"
+import P, { Parser } from "parsimmon"
 
 type RawRoute = {
   name: string
@@ -53,35 +53,75 @@ export const Pull = async (endPoint: string) => {
 
 const ESCAPE_CHARS = [`'`, `"`, "`"]
 
-const pInnie = (escape: string) =>
+const pWord = (word: string) =>
+  P.seq(...[...word].map(P.string)).map((a) => a.join(""))
+
+const pLetters1 = P.regexp(/[a-z]+/i).desc("expected at least 1 letter")
+
+const pValue = (escape: string) =>
   P.string(escape)
     .then(P.takeWhile((c) => c !== escape))
     .skip(P.string(escape))
     .map((s) => s.trim())
 
-const pClause = P.optWhitespace
-  .then(
-    P.seq(
-      P.letters.map((s) => s.toLowerCase()),
-      P.string("(")
-        .skip(P.optWhitespace)
-        .then(P.alt(...ESCAPE_CHARS.map(pInnie)))
-        .skip(P.optWhitespace)
-        .skip(P.string(")")),
-    ).map(([clause, value]) => [{ clause, value }]),
-  )
-  .skip(P.optWhitespace)
+const pClause = P.seq(
+  pLetters1.map((s) => s.toLowerCase()),
+  P.string("(")
+    .skip(P.optWhitespace)
+    .then(P.alt(...ESCAPE_CHARS.map(pValue)))
+    .skip(P.optWhitespace)
+    .skip(P.string(")")),
+).map(([clause, value]) => [{ clause, value }])
 
-const TEST_1 = ` Header(  " somethinghere   ")`
-const TEST_2 = `Host(' somethinghere') `
-const TEST_3 = " PathPrefix(   `somethinghere`   ) "
+const pGroup = <T>(parser: P.Parser<T>) =>
+  P.alt(
+    P.seq(P.string("("), P.optWhitespace)
+      .then(parser)
+      .skip(P.seq(P.optWhitespace, P.string(")"))),
+    parser,
+  )
+
+const pAND = <T>(parser: P.Parser<T[]>) =>
+  P.seq(
+    parser,
+    P.seq(P.optWhitespace, pWord("&&"), P.optWhitespace),
+    parser,
+  ).map(([lhs, _, rhs]) => [...lhs, ...rhs])
+
+const pOR = <T>(parser: P.Parser<T[]>) =>
+  P.seq(
+    parser,
+    P.seq(P.optWhitespace, pWord("||"), P.optWhitespace),
+    parser,
+  ).map(([lhs, _, rhs]) => [lhs, rhs])
+
+const pCombo = <T>(parser: P.Parser<T[]>): P.Parser<any[]> =>
+  P.alt(pAND(parser), pOR(parser), parser).many()
+
+// const pTraefik: P.Parser<any[]> = pGroup(
+//   P.lazy(() => {
+//     return P.alt(pClause, pAND, pOR)
+//   }),
+// )
+
+const TEST_1 = `Header(  " somethinghere   ")`
+const TEST_2 = `Host(' somethinghere')`
+const TEST_3 = "PathPrefix(   `somethinghere`   )"
 
 console.log(
-  pClause.tryParse(TEST_1),
-  pClause.tryParse(TEST_2),
-  pClause.tryParse(TEST_3),
+  pGroup(pClause).tryParse(TEST_1),
+  pGroup(pClause).tryParse(TEST_2),
+  pGroup(pClause).tryParse(TEST_3),
 )
 
-const TEST_4 = `${TEST_2} || ${TEST_3}`
-const TEST_5 = `(${TEST_1} && ${TEST_2})`
-const TEST_6 = `(${TEST_2} || ${TEST_3})`
+const TEST_4 = `${TEST_1} && ${TEST_2}`
+const TEST_5 = `${TEST_1} || ${TEST_2}`
+const TEST_6 = `${TEST_1} && ${TEST_2} && ${TEST_3}`
+const TEST_7 = `(${TEST_1} || ${TEST_2} || ${TEST_3})`
+
+console.log(
+  pCombo(pClause).tryParse(TEST_4),
+  pCombo(pClause).tryParse(TEST_5),
+  pCombo(pClause).tryParse(TEST_6),
+  pCombo(pClause).tryParse(TEST_7),
+)
