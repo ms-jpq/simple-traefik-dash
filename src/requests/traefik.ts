@@ -1,6 +1,6 @@
 import fetch from "node-fetch"
 import { REQ_TIMEOUT, API_ROUTERS } from "../consts"
-import Parsimmon from "parsimmon"
+import P from "parsimmon"
 
 type RawRoute = {
   name: string
@@ -51,14 +51,37 @@ export const Pull = async (endPoint: string) => {
   }
 }
 
-const pEscape = Parsimmon.oneOf([`'`, `"`, "`"].join(""))
+const ESCAPE_CHARS = [`'`, `"`, "`"]
 
-const res = pEscape.parse(`"`)
+const pInnie = (escape: string) =>
+  P.string(escape)
+    .then(P.takeWhile((c) => c !== escape))
+    .skip(P.string(escape))
+    .map((s) => s.trim())
 
-console.log(res)
+const pClause = P.optWhitespace
+  .then(
+    P.seq(
+      P.letters.map((s) => s.toLowerCase()),
+      P.string("(")
+        .skip(P.optWhitespace)
+        .then(P.alt(...ESCAPE_CHARS.map(pInnie)))
+        .skip(P.optWhitespace)
+        .skip(P.string(")")),
+    ).map(([clause, value]) => [{ clause, value }]),
+  )
+  .skip(P.optWhitespace)
 
-const ATOMICS = {
-  pHost: "",
-  pPathPrefix: "",
-  pOthers: "",
-}
+const TEST_1 = ` Header(  " somethinghere   ")`
+const TEST_2 = `Host(' somethinghere') `
+const TEST_3 = " PathPrefix(   `somethinghere`   ) "
+
+console.log(
+  pClause.tryParse(TEST_1),
+  pClause.tryParse(TEST_2),
+  pClause.tryParse(TEST_3),
+)
+
+const TEST_4 = `${TEST_2} || ${TEST_3}`
+const TEST_5 = `(${TEST_1} && ${TEST_2})`
+const TEST_6 = `(${TEST_2} || ${TEST_3})`

@@ -99,7 +99,7 @@ const Init = () => {
 }
 
 const Main = async () => {
-  const args = Init()
+  // const args = Init()
   const res = await Pull("http://10.0.0.250:8080")
   // console.log(res)
 }
