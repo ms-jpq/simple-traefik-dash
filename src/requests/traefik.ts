@@ -51,21 +51,59 @@ export const Pull = async (endPoint: string) => {
   }
 }
 
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
+const AutoInc = () => ((n) => () => n++)(1)
+const INC = AutoInc()
+
+const TST = (test: any, name = INC()) => {
+  console.log(`
+  =======================================================
+  TEST - ${name}
+  `)
+  const res = (typeof test === "function" && test) || test
+  console.log(res)
+}
+
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
 const ESCAPE_CHARS = [`'`, `"`, "`"]
 
 const pWord = (word: string) =>
   P.seq(...[...word].map(P.string)).map((a) => a.join(""))
 
-const pLetters1 = P.regexp(/[a-z]+/i).desc("expected at least 1 letter")
-
 const pValue = (escape: string) =>
   P.string(escape)
-    .then(P.takeWhile((c) => c !== escape))
+    .then(
+      P.noneOf(escape)
+        .atLeast(1)
+        .map((s) => s.join("")),
+    )
     .skip(P.string(escape))
     .map((s) => s.trim())
 
 const pClause = P.seq(
-  pLetters1.map((s) => s.toLowerCase()),
+  P.letter.atLeast(1).map((s) => s.join("").toLowerCase()),
   P.string("(")
     .skip(P.optWhitespace)
     .then(P.alt(...ESCAPE_CHARS.map(pValue)))
@@ -81,22 +119,23 @@ const pGroup = <T>(parser: P.Parser<T>) =>
     parser,
   )
 
-const pAND = <T>(parser: P.Parser<T[]>) =>
-  P.seq(
-    parser,
-    P.seq(P.optWhitespace, pWord("&&"), P.optWhitespace),
-    parser,
-  ).map(([lhs, _, rhs]) => [...lhs, ...rhs])
+const pANDsep = P.seq(P.optWhitespace, pWord("&&"), P.optWhitespace)
+const pORsep = P.seq(P.optWhitespace, pWord("||"), P.optWhitespace)
 
-const pOR = <T>(parser: P.Parser<T[]>) =>
-  P.seq(
-    parser,
-    P.seq(P.optWhitespace, pWord("||"), P.optWhitespace),
-    parser,
-  ).map(([lhs, _, rhs]) => [lhs, rhs])
+const pAND = <T>(parser: P.Parser<T[]>, prev: any[]) =>
+  pANDsep.then(parser).map((curr) => [...prev, ...curr])
 
-const pCombo = <T>(parser: P.Parser<T[]>): P.Parser<any[]> =>
-  P.alt(pAND(parser), pOR(parser), parser).many()
+const pOR = <T>(parser: P.Parser<T[]>, prev: any[]) =>
+  pORsep.then(parser).map((curr) => [prev, curr])
+
+const pCombo: P.Parser<any[]> = P.lazy(() =>
+  P.alt(
+    pClause.chain((res) =>
+      P.alt(pAND(pClause, res), pOR(pClause, res), pClause),
+    ),
+    pClause,
+  ),
+)
 
 // const pTraefik: P.Parser<any[]> = pGroup(
 //   P.lazy(() => {
@@ -104,24 +143,27 @@ const pCombo = <T>(parser: P.Parser<T[]>): P.Parser<any[]> =>
 //   }),
 // )
 
-const TEST_1 = `Header(  " somethinghere   ")`
-const TEST_2 = `Host(' somethinghere')`
-const TEST_3 = "PathPrefix(   `somethinghere`   )"
+const TEST_1 = `Header(  " test_1   ")`
+const TEST_2 = `Host(' test_2')`
+const TEST_3 = "PathPrefix(   `test_3`   )"
 
-console.log(
-  pGroup(pClause).tryParse(TEST_1),
-  pGroup(pClause).tryParse(TEST_2),
-  pGroup(pClause).tryParse(TEST_3),
-)
+// console.log(
+//   pGroup(pClause).tryParse(TEST_1),
+//   pGroup(pClause).tryParse(TEST_2),
+//   pGroup(pClause).tryParse(TEST_3),
+// )
 
 const TEST_4 = `${TEST_1} && ${TEST_2}`
 const TEST_5 = `${TEST_1} || ${TEST_2}`
 const TEST_6 = `${TEST_1} && ${TEST_2} && ${TEST_3}`
-const TEST_7 = `(${TEST_1} || ${TEST_2} || ${TEST_3})`
+const TEST_7 = `${TEST_1} || ${TEST_2} || ${TEST_3}`
 
-console.log(
-  pCombo(pClause).tryParse(TEST_4),
-  pCombo(pClause).tryParse(TEST_5),
-  pCombo(pClause).tryParse(TEST_6),
-  pCombo(pClause).tryParse(TEST_7),
-)
+TST(pCombo.tryParse(TEST_1))
+
+TST(pCombo.tryParse(TEST_4))
+
+TST(pCombo.tryParse(TEST_5))
+
+TST(pCombo.tryParse(TEST_6))
+
+TST(pCombo.tryParse(TEST_7))
