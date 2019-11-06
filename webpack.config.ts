@@ -15,7 +15,7 @@ const base = path.resolve(__dirname, "out")
 const config: webpack.Configuration = {
   target: "node",
   mode,
-  entry: [path.resolve(__dirname, "src/server/entry.ts")],
+  entry: [path.resolve(__dirname, "src/entry.ts")],
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
