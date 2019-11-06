@@ -40,7 +40,8 @@
     "webpack-bundle-analyzer": "*",
     "webpack-cli": "*",
     "webpack-dashboard": "*",
-    "webpack-dev-server": "*"
+    "webpack-dev-server": "*",
+    "webpack-shell-plugin-next": "*"
   },
   "license": "MIT",
   "scripts": {

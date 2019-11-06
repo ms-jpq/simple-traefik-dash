@@ -6,23 +6,16 @@ import HtmlWebpackPlugin from "html-webpack-plugin"
 import MiniCssExtractPlugin from "mini-css-extract-plugin"
 import path from "path"
 import webpack from "webpack"
+import WebpackShellPluginNext from "webpack-shell-plugin-next"
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer"
 
 const mode: webpack.Configuration["mode"] = "development"
 const base = path.resolve(__dirname, "out")
 
-const exclude = ["fs", "crypto", "utils", "os"]
-
 const config: webpack.Configuration = {
+  target: "node",
   mode,
-  entry: [
-    path.resolve(__dirname, "src/client/entry.ts"),
-    path.resolve(__dirname, "src/server/entry.ts"),
-  ],
-  externals: exclude.reduce(
-    (acc, curr) => Object.assign(acc, { [curr]: `root ${curr}` }),
-    {},
-  ),
+  entry: [path.resolve(__dirname, "src/server/entry.ts")],
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
@@ -35,15 +28,7 @@ const config: webpack.Configuration = {
       },
       {
         test: /\.tsx?$/,
-        use: [
-          {
-            loader: "awesome-typescript-loader",
-            options: {
-              compiler: "typescript",
-            },
-          },
-          "eslint-loader",
-        ],
+        use: ["awesome-typescript-loader", "eslint-loader"],
         exclude: /node_modules/,
       },
       {
@@ -72,10 +57,6 @@ const config: webpack.Configuration = {
         },
       },
       {
-        test: /\.(fsh|vsh)$/,
-        use: "raw-loader",
-      },
-      {
         test: /\.exec\.js$/,
         use: "script-loader",
       },
@@ -89,17 +70,12 @@ const config: webpack.Configuration = {
     new BundleAnalyzerPlugin({
       analyzerMode: "static",
     }),
-    new CompressionPlugin({}),
-    new MiniCssExtractPlugin({}),
-    // new CopyWebpackPlugin([{ from: path.resolve(__dirname, "./_locales"), to: base }]),
-    // new CopyWebpackPlugin([{ from: path.resolve(__dirname, "./out/main.wasm"), to: base }]),
+    // new WebpackShellPluginNext({
+    //   onBuildEnd: {
+    //     scripts: ["node ./out/main.js"]
+    //   }
+    // }),
   ],
-  optimization: {
-    splitChunks: {
-      chunks: "all",
-    },
-    runtimeChunk: "single",
-  },
   devServer: {
     disableHostCheck: true,
     contentBase: "out",
