@@ -66,14 +66,17 @@ export const Pull = async (endPoint: string) => {
 const AutoInc = () => ((n) => () => n++)(1)
 const INC = AutoInc()
 
-const TST = (test: any, name = INC()) => {
+const TST = (test: any, name: string | number = INC()) => {
   console.log(`
   =======================================================
   TEST - ${name}
   `)
-  const res = (typeof test === "function" && test) || test
+  const res = (typeof test === "function" && test()) || test
   console.log(res)
 }
+
+const TEST_PARSER = <T>(parser: P.Parser<T>, str: string) =>
+  TST(() => parser.tryParse(str), str)
 
 /*
  *
@@ -122,17 +125,18 @@ const pGroup = <T>(parser: P.Parser<T>) =>
 const pANDsep = P.seq(P.optWhitespace, pWord("&&"), P.optWhitespace)
 const pORsep = P.seq(P.optWhitespace, pWord("||"), P.optWhitespace)
 
-const pAND = <T>(parser: P.Parser<T[]>, prev: any[]) =>
-  pANDsep.then(parser).map((curr) => [...prev, ...curr])
+const IDENTITY = <T>(x: T) => x
 
-const pOR = <T>(parser: P.Parser<T[]>, prev: any[]) =>
-  pORsep.then(parser).map((curr) => [prev, curr])
+const FLAT_MAP = <T, U>(arr: T[], fn: (_: T) => U[]) => {
+  const temp = [] as U[]
+  arr.forEach((item) => temp.push(...fn(item)))
+  return temp
+}
 
 const pCombo: P.Parser<any[]> = P.lazy(() =>
   P.alt(
-    pClause.chain((res) =>
-      P.alt(pAND(pClause, res), pOR(pClause, res), pClause),
-    ),
+    pClause.skip(pANDsep).chain((lhs) => pCombo.map((rhs) => [...lhs, ...rhs])),
+    pClause.skip(pORsep).chain((lhs) => pCombo.map((rhs) => [lhs, rhs])),
     pClause,
   ),
 )
@@ -143,27 +147,34 @@ const pCombo: P.Parser<any[]> = P.lazy(() =>
 //   }),
 // )
 
-const TEST_1 = `Header(  " test_1   ")`
-const TEST_2 = `Host(' test_2')`
-const TEST_3 = "PathPrefix(   `test_3`   )"
+const CLAUSE_1 = `Header("CLAUSE_1")`
+const CLAUSE_2 = `Host('CLAUSE_2')`
+const CLAUSE_3 = "PathPrefix(`CLAUSE_3`)"
 
-// console.log(
-//   pGroup(pClause).tryParse(TEST_1),
-//   pGroup(pClause).tryParse(TEST_2),
-//   pGroup(pClause).tryParse(TEST_3),
-// )
+const SIMPLE_1 = `${CLAUSE_1} && ${CLAUSE_2}`
+const SIMPLE_2 = `${CLAUSE_1} || ${CLAUSE_2}`
+const SIMPLE_3 = `${CLAUSE_1} && ${CLAUSE_2} && ${CLAUSE_3} && ${CLAUSE_1}`
+const SIMPLE_$ = `${CLAUSE_1} || ${CLAUSE_2} || ${CLAUSE_3} || ${CLAUSE_1}`
 
-const TEST_4 = `${TEST_1} && ${TEST_2}`
-const TEST_5 = `${TEST_1} || ${TEST_2}`
-const TEST_6 = `${TEST_1} && ${TEST_2} && ${TEST_3}`
-const TEST_7 = `${TEST_1} || ${TEST_2} || ${TEST_3}`
+const MIXED_1 = `${CLAUSE_1} && ${CLAUSE_2} || ${CLAUSE_3} && ${CLAUSE_1}`
+const MIXED_2 = `${CLAUSE_1} || ${CLAUSE_2} && ${CLAUSE_3} || ${CLAUSE_1}`
 
-TST(pCombo.tryParse(TEST_1))
+/*
+ *
+ *
+ *
+ */
 
-TST(pCombo.tryParse(TEST_4))
+TEST_PARSER(pCombo, CLAUSE_1)
 
-TST(pCombo.tryParse(TEST_5))
+TEST_PARSER(pCombo, SIMPLE_1)
 
-TST(pCombo.tryParse(TEST_6))
+TEST_PARSER(pCombo, SIMPLE_2)
 
-TST(pCombo.tryParse(TEST_7))
+TEST_PARSER(pCombo, SIMPLE_3)
+
+TEST_PARSER(pCombo, SIMPLE_$)
+
+TEST_PARSER(pCombo, MIXED_1)
+
+TEST_PARSER(pCombo, MIXED_2)
