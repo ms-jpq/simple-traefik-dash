@@ -114,38 +114,27 @@ const pClause = P.seq(
     .skip(P.string(")")),
 ).map(([clause, value]) => [{ clause, value }])
 
+const pANDsep = P.seq(P.optWhitespace, pWord("&&"), P.optWhitespace)
+const pORsep = P.seq(P.optWhitespace, pWord("||"), P.optWhitespace)
+
 const pGroup = <T>(parser: P.Parser<T>) =>
   P.alt(
     P.seq(P.string("("), P.optWhitespace)
       .then(parser)
-      .skip(P.seq(P.optWhitespace, P.string(")"))),
+      .skip(P.seq(P.optWhitespace, P.string(")")))
+      .map((res) => [res]),
     parser,
   )
 
-const pANDsep = P.seq(P.optWhitespace, pWord("&&"), P.optWhitespace)
-const pORsep = P.seq(P.optWhitespace, pWord("||"), P.optWhitespace)
-
-const IDENTITY = <T>(x: T) => x
-
-const FLAT_MAP = <T, U>(arr: T[], fn: (_: T) => U[]) => {
-  const temp = [] as U[]
-  arr.forEach((item) => temp.push(...fn(item)))
-  return temp
-}
-
-const pCombo: P.Parser<any[]> = P.lazy(() =>
-  P.alt(
-    pClause.skip(pANDsep).chain((lhs) => pCombo.map((rhs) => [...lhs, ...rhs])),
-    pClause.skip(pORsep).chain((lhs) => pCombo.map((rhs) => [lhs, rhs])),
-    pClause,
+const pTraefik: P.Parser<any[]> = P.lazy(() =>
+  pGroup(
+    P.alt(
+      P.seq(pClause, pANDsep, pTraefik).map(([lhs, _, rhs]) => [...lhs, ...rhs]),
+      P.seq(pClause, pORsep, pTraefik).map(([lhs, _, rhs]) => [lhs, rhs]),
+      pClause,
+    ),
   ),
 )
-
-// const pTraefik: P.Parser<any[]> = pGroup(
-//   P.lazy(() => {
-//     return P.alt(pClause, pAND, pOR)
-//   }),
-// )
 
 const CLAUSE_1 = `Header("CLAUSE_1")`
 const CLAUSE_2 = `Host('CLAUSE_2')`
@@ -154,10 +143,13 @@ const CLAUSE_3 = "PathPrefix(`CLAUSE_3`)"
 const SIMPLE_1 = `${CLAUSE_1} && ${CLAUSE_2}`
 const SIMPLE_2 = `${CLAUSE_1} || ${CLAUSE_2}`
 const SIMPLE_3 = `${CLAUSE_1} && ${CLAUSE_2} && ${CLAUSE_3} && ${CLAUSE_1}`
-const SIMPLE_$ = `${CLAUSE_1} || ${CLAUSE_2} || ${CLAUSE_3} || ${CLAUSE_1}`
+const SIMPLE_4 = `${CLAUSE_1} || ${CLAUSE_2} || ${CLAUSE_3} || ${CLAUSE_1}`
 
 const MIXED_1 = `${CLAUSE_1} && ${CLAUSE_2} || ${CLAUSE_3} && ${CLAUSE_1}`
 const MIXED_2 = `${CLAUSE_1} || ${CLAUSE_2} && ${CLAUSE_3} || ${CLAUSE_1}`
+
+const BUCKETED_1 = `(${SIMPLE_1}) || (${SIMPLE_2})`
+const BUCKETED_2 = `(${SIMPLE_1}) && (${SIMPLE_2})`
 
 /*
  *
@@ -165,16 +157,20 @@ const MIXED_2 = `${CLAUSE_1} || ${CLAUSE_2} && ${CLAUSE_3} || ${CLAUSE_1}`
  *
  */
 
-TEST_PARSER(pCombo, CLAUSE_1)
+TEST_PARSER(pTraefik, CLAUSE_1)
 
-TEST_PARSER(pCombo, SIMPLE_1)
+TEST_PARSER(pTraefik, SIMPLE_1)
 
-TEST_PARSER(pCombo, SIMPLE_2)
+TEST_PARSER(pTraefik, SIMPLE_2)
 
-TEST_PARSER(pCombo, SIMPLE_3)
+TEST_PARSER(pTraefik, SIMPLE_3)
 
-TEST_PARSER(pCombo, SIMPLE_$)
+TEST_PARSER(pTraefik, SIMPLE_4)
 
-TEST_PARSER(pCombo, MIXED_1)
+TEST_PARSER(pTraefik, MIXED_1)
 
-TEST_PARSER(pCombo, MIXED_2)
+TEST_PARSER(pTraefik, MIXED_2)
+
+TEST_PARSER(pTraefik, BUCKETED_1)
+
+TEST_PARSER(pTraefik, BUCKETED_2)
