@@ -72,7 +72,7 @@ const TST = (test: any, name: string | number = INC()) => {
   TEST - ${name}
   `)
   const res = (typeof test === "function" && test()) || test
-  console.log(res)
+  console.log(JSON.stringify(res, undefined, 2))
 }
 
 const TEST_PARSER = <T>(parser: P.Parser<T>, str: string) =>
@@ -114,26 +114,25 @@ const pClause = P.seq(
     .skip(P.string(")")),
 ).map(([clause, value]) => [{ clause, value }])
 
-const pANDsep = P.seq(P.optWhitespace, pWord("&&"), P.optWhitespace)
-const pORsep = P.seq(P.optWhitespace, pWord("||"), P.optWhitespace)
+const pSequence = <T, U>(parser: P.Parser<T>, sep: P.Parser<U>) =>
+  P.seq(parser, P.seq(sep, parser).many()).map(([fst, tail]) => {
+    const res = [fst] as (T | U)[]
+    tail.forEach(([s, r]) => res.push(s, r))
+    return res
+  })
+
+const pSep = P.optWhitespace
+  .then(P.alt(pWord("&&"), pWord("||")))
+  .skip(P.optWhitespace)
 
 const pGroup = <T>(parser: P.Parser<T>) =>
-  P.alt(
-    P.seq(P.string("("), P.optWhitespace)
-      .then(parser)
-      .skip(P.seq(P.optWhitespace, P.string(")")))
-      .map((res) => [res]),
-    parser,
-  )
+  P.seq(P.string("("), P.optWhitespace)
+    .then(parser)
+    .skip(P.seq(P.optWhitespace, P.string(")")))
+    .map((res) => [res])
 
-const pTraefik: P.Parser<any[]> = P.lazy(() =>
-  pGroup(
-    P.alt(
-      P.seq(pClause, pANDsep, pTraefik).map(([lhs, _, rhs]) => [...lhs, ...rhs]),
-      P.seq(pClause, pORsep, pTraefik).map(([lhs, _, rhs]) => [lhs, rhs]),
-      pClause,
-    ),
-  ),
+const pExpr: P.Parser<any> = P.lazy(() =>
+  P.alt(pSequence(P.alt(pClause, pGroup(pExpr)), pSep), pClause),
 )
 
 const CLAUSE_1 = `Header("CLAUSE_1")`
@@ -148,8 +147,11 @@ const SIMPLE_4 = `${CLAUSE_1} || ${CLAUSE_2} || ${CLAUSE_3} || ${CLAUSE_1}`
 const MIXED_1 = `${CLAUSE_1} && ${CLAUSE_2} || ${CLAUSE_3} && ${CLAUSE_1}`
 const MIXED_2 = `${CLAUSE_1} || ${CLAUSE_2} && ${CLAUSE_3} || ${CLAUSE_1}`
 
-const BUCKETED_1 = `(${SIMPLE_1}) || (${SIMPLE_2})`
-const BUCKETED_2 = `(${SIMPLE_1}) && (${SIMPLE_2})`
+const BUCKETED_1 = `(${CLAUSE_1}) || (${CLAUSE_2})`
+const BUCKETED_2 = `(${CLAUSE_1}) && (${CLAUSE_2})`
+const BUCKETED_3 = `(${CLAUSE_1}) && (${CLAUSE_2} && ${CLAUSE_3})`
+const BUCKETED_4 = `(${CLAUSE_1}) && (${CLAUSE_2} || (${CLAUSE_3} && ${CLAUSE_1}))`
+const BUCKETED_5 = `(${CLAUSE_1}) && (${CLAUSE_2} || (${CLAUSE_3} && (${CLAUSE_1} || ${CLAUSE_2})))`
 
 /*
  *
@@ -157,20 +159,26 @@ const BUCKETED_2 = `(${SIMPLE_1}) && (${SIMPLE_2})`
  *
  */
 
-TEST_PARSER(pTraefik, CLAUSE_1)
+TEST_PARSER(pExpr, CLAUSE_1)
 
-TEST_PARSER(pTraefik, SIMPLE_1)
+TEST_PARSER(pExpr, SIMPLE_1)
 
-TEST_PARSER(pTraefik, SIMPLE_2)
+TEST_PARSER(pExpr, SIMPLE_2)
 
-TEST_PARSER(pTraefik, SIMPLE_3)
+TEST_PARSER(pExpr, SIMPLE_3)
 
-TEST_PARSER(pTraefik, SIMPLE_4)
+TEST_PARSER(pExpr, SIMPLE_4)
 
-TEST_PARSER(pTraefik, MIXED_1)
+TEST_PARSER(pExpr, MIXED_1)
 
-TEST_PARSER(pTraefik, MIXED_2)
+TEST_PARSER(pExpr, MIXED_2)
 
-TEST_PARSER(pTraefik, BUCKETED_1)
+TEST_PARSER(pExpr, BUCKETED_1)
 
-TEST_PARSER(pTraefik, BUCKETED_2)
+TEST_PARSER(pExpr, BUCKETED_2)
+
+TEST_PARSER(pExpr, BUCKETED_3)
+
+TEST_PARSER(pExpr, BUCKETED_4)
+
+TEST_PARSER(pExpr, BUCKETED_5)
