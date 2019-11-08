@@ -89,6 +89,10 @@ const TEST_PARSER = <T>(parser: P.Parser<T>, str: string) =>
  *
  *
  */
+type Clause = {
+  clause: string
+  value: string
+}
 
 const ESCAPE_CHARS = [`'`, `"`, "`"]
 
@@ -114,16 +118,18 @@ const pClause = P.seq(
     .skip(P.string(")")),
 ).map(([clause, value]) => [{ clause, value }])
 
-const pSequence = <T, U>(parser: P.Parser<T>, sep: P.Parser<U>) =>
-  P.seq(parser, P.seq(sep, parser).many()).map(([fst, tail]) => {
-    const res = [fst] as (T | U)[]
-    tail.forEach(([s, r]) => res.push(s, r))
-    return res
-  })
+const pTerms = <T>(parser: P.Parser<T[]>) => {
+  const pSep = P.optWhitespace
+    .then(P.alt(pWord("&&").result(true), pWord("||").result(false)))
+    .skip(P.optWhitespace)
 
-const pSep = P.optWhitespace
-  .then(P.alt(pWord("&&"), pWord("||")))
-  .skip(P.optWhitespace)
+  return P.seq(parser, P.seq(pSep, parser).many()).map(([fst, tail]) =>
+    tail.reduce(
+      (lhs, [merge, rhs]) => (merge ? [...lhs, ...rhs] : [lhs, rhs]) as any[],
+      fst,
+    ),
+  )
+}
 
 const pGroup = <T>(parser: P.Parser<T>) =>
   P.seq(P.string("("), P.optWhitespace)
@@ -132,8 +138,10 @@ const pGroup = <T>(parser: P.Parser<T>) =>
     .map((res) => [res])
 
 const pExpr: P.Parser<any> = P.lazy(() =>
-  P.alt(pSequence(P.alt(pClause, pGroup(pExpr)), pSep), pClause),
+  P.alt(pTerms(P.alt(pClause, pGroup(pExpr))), pClause),
 )
+
+const pTraefik = () => {}
 
 const CLAUSE_1 = `Header("CLAUSE_1")`
 const CLAUSE_2 = `Host('CLAUSE_2')`
