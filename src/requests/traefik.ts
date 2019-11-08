@@ -89,8 +89,19 @@ const TEST_PARSER = <T>(parser: P.Parser<T>, str: string) =>
  *
  *
  */
+
+type CLAUSE_LITERAL =
+  | "headers"
+  | "headersregexp"
+  | "host"
+  | "hostregexp"
+  | "method"
+  | "path"
+  | "pathprefix"
+  | "query"
+
 type Clause = {
-  clause: string
+  clause: CLAUSE_LITERAL
   value: string
 }
 
@@ -100,28 +111,34 @@ const pWord = (word: string) =>
   P.seq(...[...word].map(P.string)).map((a) => a.join(""))
 
 const pValue = (escape: string) =>
-  P.string(escape)
-    .then(
-      P.noneOf(escape)
-        .atLeast(1)
-        .map((s) => s.join("")),
-    )
-    .skip(P.string(escape))
-    .map((s) => s.trim())
+  P.noneOf(escape)
+    .atLeast(1)
+    .map((s) => s.join(""))
+    .wrap(P.string(escape), P.string(escape))
+    .trim(P.optWhitespace)
+
+const pValues = P.sepBy1(
+  P.alt(...ESCAPE_CHARS.map(pValue)),
+  P.seq(P.optWhitespace, P.string(","), P.optWhitespace),
+)
 
 const pClause = P.seq(
   P.letter.atLeast(1).map((s) => s.join("").toLowerCase()),
-  P.string("(")
-    .skip(P.optWhitespace)
-    .then(P.alt(...ESCAPE_CHARS.map(pValue)))
-    .skip(P.optWhitespace)
-    .skip(P.string(")")),
-).map(([clause, value]) => [{ clause, value }])
+  pValues.wrap(
+    P.seq(P.string("("), P.optWhitespace),
+    P.seq(P.optWhitespace, P.string(")")),
+  ),
+).map(([clause, values]) =>
+  values.length === 1
+    ? [{ clause, value: values[0] }]
+    : values.map((value) => [{ clause, value }]),
+)
 
 const pTerms = <T>(parser: P.Parser<T[]>) => {
-  const pSep = P.optWhitespace
-    .then(P.alt(pWord("&&").result(true), pWord("||").result(false)))
-    .skip(P.optWhitespace)
+  const pSep = P.alt(pWord("&&").result(true), pWord("||").result(false)).wrap(
+    P.optWhitespace,
+    P.optWhitespace,
+  )
 
   return P.seq(parser, P.seq(pSep, parser).many()).map(([fst, tail]) =>
     tail.reduce(
@@ -132,14 +149,22 @@ const pTerms = <T>(parser: P.Parser<T[]>) => {
 }
 
 const pGroup = <T>(parser: P.Parser<T>) =>
-  P.seq(P.string("("), P.optWhitespace)
-    .then(parser)
-    .skip(P.seq(P.optWhitespace, P.string(")")))
+  parser
+    .wrap(
+      P.seq(P.string("("), P.optWhitespace),
+      P.seq(P.optWhitespace, P.string(")")),
+    )
     .map((res) => [res])
 
 const pExpr: P.Parser<any> = P.lazy(() =>
   P.alt(pTerms(P.alt(pClause, pGroup(pExpr))), pClause),
 )
+
+const pBracket = <T>(parser: P.Parser<T>, open: string, close: string) =>
+  parser.wrap(
+    P.seq(P.string(open), P.optWhitespace),
+    P.seq(P.optWhitespace, P.string(close)),
+  )
 
 const pTraefik = () => {}
 
