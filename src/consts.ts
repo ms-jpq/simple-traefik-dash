@@ -1,3 +1,5 @@
+export const CSV_COLUMNS = ["name", "uri"]
+
 export const TEXT_DIVIDER = `
 ==============================================================================
 `
@@ -12,8 +14,8 @@ RULES:
 STD generates reachable routes based on two Router predicates:
 Host(<xyz>) [required] and PathPrefix(<zyx>) [optional]
 
-CSV imports requires 3 columns:
-name, uri, favicon_uri
+CSV imports requires 2 columns:
+${CSV_COLUMNS.join(", ")}
 
 ${TEXT_DIVIDER}
 `

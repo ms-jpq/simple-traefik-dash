@@ -1,6 +1,17 @@
 import { ArgumentOptions, ArgumentParser } from "argparse"
 import { ENV_PREFIX, READ_ME, TEXT_DIVIDER, DEFAULT_PORTS } from "./consts"
-import { Pull } from "./requests/traefik"
+import P from "parsimmon"
+import { pRules } from "./parse/rules"
+import { PullTraefik, PullFile } from "./requests"
+
+type Args = {
+  traefikApi: string
+  entryPoints: string[]
+  exitProtocol: "http" | "https"
+  exitPort: number
+  labelStrategy: "as-is" | "prettify"
+  ignoreRoutes: string[]
+}
 
 const Parser = ((parser) => {
   const USE_ENV = ({
@@ -68,14 +79,7 @@ const Parser = ((parser) => {
           [k.replace(/_\w/g, ([_, c]) => c.toUpperCase())]: v,
         }),
       {},
-    ) as {
-      traefikApi: string
-      entryPoints: string[]
-      exitProtocol: "http" | "https"
-      exitPort: number
-      labelStrategy: "as-is" | "prettify"
-      ignoreRoutes: string[]
-    }
+    ) as Args
 
     const { protocol, host } = new URL(traefikApi)
     return {
@@ -89,7 +93,7 @@ const Parser = ((parser) => {
   return { explain, parse }
 })(new ArgumentParser({}))
 
-const Init = () => {
+const init = () => {
   console.log(READ_ME)
   Parser.explain()
   const args = Parser.parse()
@@ -98,10 +102,99 @@ const Init = () => {
   return args
 }
 
+const pull = () => {}
+
 const Main = async () => {
   // const args = Init()
-  const res = await Pull("http://10.0.0.250:8080")
+  const res = await PullTraefik("http://10.0.0.250:8080")
   // console.log(res)
 }
 
 Main()
+
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
+const AutoInc = () => ((n) => () => n++)(1)
+const INC = AutoInc()
+
+const TST = (test: any, name: string | number = INC()) => {
+  console.log(`
+  =======================================================
+  TEST - ${name}
+  `)
+  const res = (typeof test === "function" && test()) || test
+  console.log(JSON.stringify(res, undefined, 2))
+}
+
+const TEST_PARSER = <T>(parser: P.Parser<T>, str: string) =>
+  TST(() => parser.tryParse(str), str)
+
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
+const CLAUSE_1 = `PathPrefix("path_prefix_1a", 'path_prefix_1b')`
+const CLAUSE_2 = `Host('host_1')`
+const CLAUSE_3 = "Header(`header_1`)"
+
+const SIMPLE_1 = `${CLAUSE_1} && ${CLAUSE_2}`
+const SIMPLE_2 = `${CLAUSE_1} || ${CLAUSE_2}`
+const SIMPLE_3 = `${CLAUSE_1} && ${CLAUSE_2} && ${CLAUSE_3} && ${CLAUSE_1}`
+const SIMPLE_4 = `${CLAUSE_1} || ${CLAUSE_2} || ${CLAUSE_3} || ${CLAUSE_1}`
+
+const MIXED_1 = `${CLAUSE_1} && ${CLAUSE_2} || ${CLAUSE_3} && ${CLAUSE_1}`
+const MIXED_2 = `${CLAUSE_1} || ${CLAUSE_2} && ${CLAUSE_3} || ${CLAUSE_1}`
+
+const BUCKETED_1 = `(${CLAUSE_1}) || (${CLAUSE_2})`
+const BUCKETED_2 = `(${CLAUSE_1}) && (${CLAUSE_2})`
+const BUCKETED_3 = `(${CLAUSE_1}) && (${CLAUSE_2} && ${CLAUSE_3})`
+const BUCKETED_4 = `(${CLAUSE_1}) && (${CLAUSE_2} || (${CLAUSE_3} && ${CLAUSE_1}))`
+const BUCKETED_5 = `(${CLAUSE_1}) && (${CLAUSE_2} || (${CLAUSE_3} && (${CLAUSE_1} || ${CLAUSE_2})))`
+
+/*
+ *
+ *
+ *
+ */
+
+TEST_PARSER(pRules, CLAUSE_1)
+
+TEST_PARSER(pRules, SIMPLE_1)
+
+TEST_PARSER(pRules, SIMPLE_2)
+
+TEST_PARSER(pRules, SIMPLE_3)
+
+TEST_PARSER(pRules, SIMPLE_4)
+
+TEST_PARSER(pRules, MIXED_1)
+
+TEST_PARSER(pRules, MIXED_2)
+
+TEST_PARSER(pRules, BUCKETED_1)
+
+TEST_PARSER(pRules, BUCKETED_2)
+
+TEST_PARSER(pRules, BUCKETED_3)
+
+TEST_PARSER(pRules, BUCKETED_4)
+
+TEST_PARSER(pRules, BUCKETED_5)
