@@ -1,6 +1,7 @@
 import fetch from "node-fetch"
 import { REQ_TIMEOUT, API_ROUTERS } from "../consts"
-import P, { Parser } from "parsimmon"
+import P from "parsimmon"
+import { deepEqual } from "assert"
 
 type RawRoute = {
   name: string
@@ -62,6 +63,20 @@ export const Pull = async (endPoint: string) => {
  *
  *
  */
+const partition = <T>(arr: T[], predicate: (_: T) => boolean) =>
+  arr.reduce(
+    ({ lhs, rhs }, curr) =>
+      predicate(curr)
+        ? { lhs: [...lhs, curr], rhs }
+        : { lhs, rhs: [...rhs, curr] },
+    { lhs: [] as T[], rhs: [] as T[] },
+  )
+
+const flatMap = <T, U>(arr: T[], trans: (_: T) => U[]) =>
+  arr.reduce((acc, curr) => [...acc, ...trans(curr)], [] as U[])
+
+const filterUnique = <T>(arr: T[], predicate: (a: T, b: T) => boolean) =>
+  arr.filter((v1, i, a) => a.findIndex((v2) => predicate(v1, v2)) === i)
 
 const AutoInc = () => ((n) => () => n++)(1)
 const INC = AutoInc()
@@ -103,6 +118,11 @@ type CLAUSE_LITERAL =
 type Clause = {
   clause: CLAUSE_LITERAL
   value: string
+}
+
+type Path = {
+  domain: string
+  prefix: string
 }
 
 const ESCAPE_CHARS = [`'`, `"`, "`"]
@@ -160,17 +180,69 @@ const pExpr: P.Parser<any> = P.lazy(() =>
   P.alt(pTerms(P.alt(pClause, pGroup(pExpr))), pClause),
 )
 
-const pBracket = <T>(parser: P.Parser<T>, open: string, close: string) =>
-  parser.wrap(
-    P.seq(P.string(open), P.optWhitespace),
-    P.seq(P.optWhitespace, P.string(close)),
+const pRoutes = (candidates: any[]) => {
+  const crush = (input: any[], clauses: Clause[]): any[] => {
+    const { lhs, rhs } = partition(input, Array.isArray)
+    if (lhs.length === 0) {
+      return [...rhs, ...clauses]
+    }
+    return lhs.map((item) => crush(item, [...rhs, ...clauses]))
+  }
+
+  const extract = (input: any[], acc: any[]): Clause[][] => {
+    if (input.every((item) => !Array.isArray(item))) {
+      return [...acc, input]
+    }
+    return flatMap(input, (item) => extract(item, acc))
+  }
+
+  const testBracket = (open: string, close: string) => (str: string) => {
+    const [p1, p2] = [str.indexOf(open), str.lastIndexOf(close)]
+    return p2 > p1 && p1 >= 0 && p2 >= 0
+  }
+
+  const validate = (clauses: Clause[]) => {
+    const test = testBracket("{", "}")
+    const candidate = clauses.reduce(
+      (acc, { clause, value }) => {
+        if (!acc || Reflect.has(acc, clause)) {
+          return undefined
+        } else {
+          return Object.assign(acc, { [clause]: value })
+        }
+      },
+      {} as Partial<Record<CLAUSE_LITERAL, string>> | undefined,
+    )
+
+    const { host, pathprefix, ...opts } = candidate || {}
+    if (!host || (pathprefix && test(pathprefix)) || Object.keys(opts).length) {
+      return {
+        success: false,
+        result: clauses,
+      }
+    }
+    const result = { host, pathprefix: pathprefix || "" }
+    return { success: true, result }
+  }
+
+  const { lhs, rhs } = partition(
+    filterUnique(
+      extract(crush(candidates, []), []).map(validate),
+      (a, b) => JSON.stringify(a) === JSON.stringify(b),
+    ),
+    ({ success }) => success,
   )
 
-const pTraefik = () => {}
+  const paths = lhs.map(({ result }) => result)
+  const failed = rhs.map(({ result }) => result)
+  return { paths, failed }
+}
 
-const CLAUSE_1 = `Header("CLAUSE_1")`
-const CLAUSE_2 = `Host('CLAUSE_2')`
-const CLAUSE_3 = "PathPrefix(`CLAUSE_3`)"
+const pTraefik = pExpr.map(pRoutes)
+
+const CLAUSE_1 = `PathPrefix("path_prefix_1a", 'path_prefix_1b')`
+const CLAUSE_2 = `Host('host_1')`
+const CLAUSE_3 = "Header(`header_1`)"
 
 const SIMPLE_1 = `${CLAUSE_1} && ${CLAUSE_2}`
 const SIMPLE_2 = `${CLAUSE_1} || ${CLAUSE_2}`
@@ -192,26 +264,26 @@ const BUCKETED_5 = `(${CLAUSE_1}) && (${CLAUSE_2} || (${CLAUSE_3} && (${CLAUSE_1
  *
  */
 
-TEST_PARSER(pExpr, CLAUSE_1)
+TEST_PARSER(pTraefik, CLAUSE_1)
 
-TEST_PARSER(pExpr, SIMPLE_1)
+TEST_PARSER(pTraefik, SIMPLE_1)
 
-TEST_PARSER(pExpr, SIMPLE_2)
+TEST_PARSER(pTraefik, SIMPLE_2)
 
-TEST_PARSER(pExpr, SIMPLE_3)
+TEST_PARSER(pTraefik, SIMPLE_3)
 
-TEST_PARSER(pExpr, SIMPLE_4)
+TEST_PARSER(pTraefik, SIMPLE_4)
 
-TEST_PARSER(pExpr, MIXED_1)
+TEST_PARSER(pTraefik, MIXED_1)
 
-TEST_PARSER(pExpr, MIXED_2)
+TEST_PARSER(pTraefik, MIXED_2)
 
-TEST_PARSER(pExpr, BUCKETED_1)
+TEST_PARSER(pTraefik, BUCKETED_1)
 
-TEST_PARSER(pExpr, BUCKETED_2)
+TEST_PARSER(pTraefik, BUCKETED_2)
 
-TEST_PARSER(pExpr, BUCKETED_3)
+TEST_PARSER(pTraefik, BUCKETED_3)
 
-TEST_PARSER(pExpr, BUCKETED_4)
+TEST_PARSER(pTraefik, BUCKETED_4)
 
-TEST_PARSER(pExpr, BUCKETED_5)
+TEST_PARSER(pTraefik, BUCKETED_5)
