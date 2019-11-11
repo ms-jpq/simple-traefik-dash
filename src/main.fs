@@ -31,7 +31,7 @@ module main =
         System.Console.WriteLine()
         let res = proutes rule
         match res with
-        | Ok v -> Seq.iter echo v
+        | Ok v -> echo v
         | Error e -> echo e
         System.Console.WriteLine()
         System.Console.WriteLine()

@@ -34,6 +34,7 @@ module Rules =
             | (Coll v1, Coll v2) -> v1 ++ v2
             |> Coll
 
+
         static member Mor t1 t2 =
             match (t1, t2) with
             | (Base v1, Base v2) ->
@@ -52,21 +53,21 @@ module Rules =
             |> Coll
 
         static member Flatten term =
-            let ans = List<List<Clause>>()
-            echo term
-            let rec crush t (clauses: List<Clause>) =
-                match t with
-                | Base clause ->
-                    clauses.Add(clause)
-                    if not (ans.Contains(clauses)) then
-                        echo "ADD"
-                        ans.Add(clauses)
-                | Coll lst ->
-                    let acc = List<Clause>()
-                    lst |> Seq.iter (fun t -> crush t acc |> ignore)
-                    acc.AddRange(clauses)
-            crush term (List<Clause>())
-            ans |> Seq.map (Seq.map id)
+            // let ans = List<List<Clause>>()
+            // echo term
+            // let rec crush t (clauses: List<Clause>) =
+            //     match t with
+            //     | Base clause ->
+            //         clauses.Add(clause)
+            //         if not (ans.Contains(clauses)) then
+            //             ans.Add(clauses)
+            //     | Coll lst ->
+            //         let acc = List<Clause>()
+            //         lst |> Seq.iter (fun t -> crush t acc |> ignore)
+            //         acc.AddRange(clauses)
+            // crush term (List<Clause>())
+            // ans |> Seq.map (Seq.map id)
+            term
 
 
     type Path =
@@ -94,7 +95,9 @@ module Rules =
             |> Seq.map (fun v ->
                 { clause = clause
                   value = v }
-                |> Base)
+                |> (Base
+                    >> Seq.singleton
+                    >> Coll))
             |> Coll
         (letter |> many1Chars) .>>. (pBracketed values) |>> bin
 
