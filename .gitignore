@@ -8,3 +8,7 @@ npm-debug.log
 obj
 bin
 .ionide
+.paket/
+paket-files/
+paket.lock
+packages/

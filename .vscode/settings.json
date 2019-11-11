@@ -2,8 +2,5 @@
   "FSharp.enableAnalyzers": true,
   "FSharp.enableTreeView": true,
   "FSharp.externalAutocomplete": true,
-  "FSharp.fsacRuntime": "netcore",
-  "[fsharp]": {
-    "editor.defaultFormatter": "paolodellepiane.fantomas-fmt"
-  },
+  "FSharp.fsacRuntime": "netcore"
 }
