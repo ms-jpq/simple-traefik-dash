@@ -127,12 +127,12 @@ module ResultMonad =
                 func a |> Ok
             with e -> Error e
 
-        static member NewError msg = Exception(message = msg) |> Error
+        static member ExnError msg = Exception(message = msg) |> Error
 
-        static member FromOptional msg o =
+        static member FromOptional err o =
             match o with
             | Some v -> Ok v
-            | None -> Result.NewError msg
+            | None -> Error err
 
         static member Recover replacement result =
             match result with

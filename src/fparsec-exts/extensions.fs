@@ -13,7 +13,7 @@ module Extensions =
         static member FromParseResult result =
             match result with
             | Success(s, _, _) -> s |> Result.Ok
-            | Failure(f, _, _) -> f |> Result.NewError
+            | Failure(f, _, _) -> f |> Result.ExnError
 
     let presult result =
         match result with
