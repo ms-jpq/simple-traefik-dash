@@ -3,15 +3,17 @@ namespace STD.Parsers
 open DomainAgnostic
 open FParsec
 open FParsecExtensions
+open System.Collections.Generic
 
 
 
 module Rules =
 
 
-    let CLAUSELITERALS = [ "headers"; "headersregexp"; "host"; "hostregexp"; "method"; "path"; "pathprefix"; "query" ]
+    let CLAUSELITERALS =
+        [ "headers"; "headersregexp"; "host"; "hostregexp"; "method"; "path"; "pathprefix"; "query" ] |> Set
 
-    let ESCAPECHARS = [ '''; '"'; '`' ]
+    let ESCAPECHARS = [ '''; '"'; '`' ] |> Set
 
     type Clause =
         { clause: string
@@ -48,6 +50,23 @@ module Rules =
                   Coll v2 ]
             |> Seq.ofList
             |> Coll
+
+        static member Flatten term =
+            let ans = List<List<Clause>>()
+            echo term
+            let rec crush t (clauses: List<Clause>) =
+                match t with
+                | Base clause ->
+                    clauses.Add(clause)
+                    if not (ans.Contains(clauses)) then
+                        echo "ADD"
+                        ans.Add(clauses)
+                | Coll lst ->
+                    let acc = List<Clause>()
+                    lst |> Seq.iter (fun t -> crush t acc |> ignore)
+                    acc.AddRange(clauses)
+            crush term (List<Clause>())
+            ans |> Seq.map (Seq.map id)
 
 
     type Path =
@@ -94,25 +113,20 @@ module Rules =
 
     let pGroup parser = pBracketed parser |>> (fun res -> Coll [ res ])
 
-    let rec expr s = s |> (pTerms (clause <|> pGroup expr) <|> clause)
+    let rec expr s =
+        let pclause = clause |> between spaces spaces
+        let p = (pTerms (pclause <|> pGroup expr) <|> pclause)
+        p s
 
-
-    let crush (input: Term) (clauses: Clause seq) =
-
-        2
-
-
-    let extract input acc =
-        2
 
     let testBracket (str: string) =
         let p1 = str.IndexOf("{")
         let p2 = str.IndexOf("}")
         p2 > p1 && p1 >= 0 && p2 >= 0
 
-    let vaildate clauses =
-        2
+    let vaildate clauses = 2
 
-    let proutes (candidates: Term) =
-
-        2
+    let proutes rule =
+        rule
+        |> run (between spaces spaces expr |>> Term.Flatten)
+        |> Result.FromParseResult

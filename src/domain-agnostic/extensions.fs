@@ -157,15 +157,27 @@ module Seq =
 
     let Appending elem sequence = Seq.singleton elem |> Seq.append sequence
 
-    let AsyncMap func sequence =
-        sequence
-        |> Seq.map (func |> Async.New)
-        |> Async.ParallelSeq
-
     let NilIfEmpty(s: 'a seq) =
         if Seq.isEmpty s then None
         else Some s
 
+    let Partition predicate source =
+        let map =
+            source
+            |> Seq.groupBy predicate
+            |> Map.ofSeq
+
+        let get flag =
+            map
+            |> Map.tryFind flag
+            |> Option.defaultValue Seq.empty
+
+        get true, get false
+
+    let AsyncMap func sequence =
+        sequence
+        |> Seq.map (func |> Async.New)
+        |> Async.ParallelSeq
 
 [<RequireQualifiedAccess>]
 module List =
