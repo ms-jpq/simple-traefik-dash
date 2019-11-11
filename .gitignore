@@ -5,3 +5,6 @@ out
 *.css.d.ts
 wasm_go.js
 npm-debug.log
+obj
+bin
+.ionide

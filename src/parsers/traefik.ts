@@ -1,12 +1,12 @@
-import { pRules as PRules } from "./rules"
+import { pRules } from "./rules"
 
 type RawRoute = {
   name: string
   status: string
   using: string[]
   rule: string
+  tls?: boolean
 }
-
 
 const isParsable = ({ name, using, rule }: Partial<RawRoute>) => {
   const ch0 = status === "enabled"
@@ -32,6 +32,14 @@ const filter = (candidates: Partial<RawRoute>[]) => {
   return { routes, failed }
 }
 
-export const PTraefik = (data: any) => {
-  return PRules
+export const pTraefik = ({
+  routes,
+  entryPoints,
+}: {
+  routes: Partial<RawRoute>[]
+  entryPoints: string[]
+}) => {
+  const filtered = filter(routes)
+
+  return routes
 }

@@ -1,9 +1,9 @@
 {
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "FSharp.enableAnalyzers": true,
+  "FSharp.enableTreeView": true,
+  "FSharp.externalAutocomplete": true,
+  "FSharp.fsacRuntime": "netcore",
+  "[fsharp]": {
+    "editor.defaultFormatter": "paolodellepiane.fantomas-fmt"
   },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "typescript.tsdk": "node_modules/typescript/lib"
 }
