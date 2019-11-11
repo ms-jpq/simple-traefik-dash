@@ -84,9 +84,9 @@ module Rules =
         ESCAPECHARS
         |> Seq.map pValue
         |> choice
-        |> flip sepBy1 (spaces .>>. pstring "," .>>. spaces)
+        |> flip sepBy1 ((spaces .>>. pstring "," .>>. spaces) |> attempt)
 
-    let pBracketed p = p |> between (pchar '(' .>>. spaces) (spaces .>>. pchar ')')
+    let pBracketed p = p |> between (spaces .>>. pchar '(' .>>. spaces) (spaces .>>. pchar ')' .>>. spaces)
 
     let clause: Parser<Term, unit> =
         let bin (clause, values) =
@@ -114,7 +114,11 @@ module Rules =
     let pGroup parser = pBracketed parser |>> (fun res -> Coll [ res ])
 
     let rec expr s =
-        let pclause = clause |> between spaces spaces
+        let pclause =
+            clause
+            |> between spaces spaces
+            |> attempt
+
         let p = (pTerms (pclause <|> pGroup expr) <|> pclause)
         p s
 
@@ -128,5 +132,5 @@ module Rules =
 
     let proutes rule =
         rule
-        |> run (between spaces spaces expr |>> Term.Flatten)
+        |> run (expr |>> Term.Flatten)
         |> Result.FromParseResult
