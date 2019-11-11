@@ -3,7 +3,6 @@ namespace STD.Parsers
 open DomainAgnostic
 open FParsec
 open FParsecExtensions
-open System.Collections.Generic
 
 
 
@@ -19,55 +18,27 @@ module Rules =
         { clause: string
           value: string }
 
+    type Route = Clause seq
+
     type Term =
-        | Base of Clause
-        | Coll of Term seq
+        | Routes of Route seq
+        | Group of Route seq
 
         static member Mand t1 t2 =
             match (t1, t2) with
-            | (Base v1, Base v2) ->
-                [ Base v1
-                  Base v2 ]
-                |> Seq.ofList
-            | (Base v1, Coll v2) -> [ Base v1 ] ++ v2
-            | (Coll v1, Base v2) -> v1 ++ [ Base v2 ]
-            | (Coll v1, Coll v2) -> v1 ++ v2
-            |> Coll
-
+            | (Routes r1, Routes r2) -> Seq.Crossproduct r1 r2 |> Seq.map (fun (r1, r2) -> r1 ++ r2)
+            | (Routes r, Group g) -> Seq.Crossproduct r g |> Seq.map (fun (r, g) -> g ++ r)
+            | (Group g, Routes r) -> Seq.Crossproduct r g |> Seq.map (fun (r, g) -> g ++ r)
+            | (Group g1, Group g2) -> Seq.Crossproduct g1 g2 |> Seq.map (fun (g1, g2) -> g1 ++ g2)
+            |> Routes
 
         static member Mor t1 t2 =
             match (t1, t2) with
-            | (Base v1, Base v2) ->
-                [ Coll [ Base v1 ]
-                  Coll [ Base v2 ] ]
-            | (Base v1, Coll v2) ->
-                [ Base v1
-                  Coll v2 ]
-            | (Coll v1, Base v2) ->
-                [ Coll v1
-                  Base v2 ]
-            | (Coll v1, Coll v2) ->
-                [ Coll v1
-                  Coll v2 ]
-            |> Seq.ofList
-            |> Coll
-
-        static member Flatten term =
-            // let ans = List<List<Clause>>()
-            // echo term
-            // let rec crush t (clauses: List<Clause>) =
-            //     match t with
-            //     | Base clause ->
-            //         clauses.Add(clause)
-            //         if not (ans.Contains(clauses)) then
-            //             ans.Add(clauses)
-            //     | Coll lst ->
-            //         let acc = List<Clause>()
-            //         lst |> Seq.iter (fun t -> crush t acc |> ignore)
-            //         acc.AddRange(clauses)
-            // crush term (List<Clause>())
-            // ans |> Seq.map (Seq.map id)
-            term
+            | (Routes r1, Routes r2) -> r1 ++ r2
+            | (Routes r, Group g) -> g ++ r
+            | (Group g, Routes r) -> g ++ r
+            | (Group g1, Group g2) -> g1 ++ g2
+            |> Routes
 
 
     type Path =
@@ -89,16 +60,14 @@ module Rules =
 
     let pBracketed p = p |> between (spaces .>>. pchar '(' .>>. spaces) (spaces .>>. pchar ')' .>>. spaces)
 
-    let clause: Parser<Term, unit> =
-        let bin (clause, values) =
+    let clause =
+        let bin (clause: string, values: string seq) =
             values
             |> Seq.map (fun v ->
                 { clause = clause
                   value = v }
-                |> (Base
-                    >> Seq.singleton
-                    >> Coll))
-            |> Coll
+                |> Seq.singleton)
+            |> Routes
         (letter |> many1Chars) .>>. (pBracketed values) |>> bin
 
     let pTerms parser =
@@ -114,7 +83,11 @@ module Rules =
         |> ((.>>.) parser)
         |>> compact
 
-    let pGroup parser = pBracketed parser |>> (fun res -> Coll [ res ])
+    let pGroup parser =
+        pBracketed parser |>> (fun res ->
+        match res with
+        | Routes r -> Group r
+        | Group g -> Group g)
 
     let rec expr s =
         let pclause =
@@ -135,5 +108,5 @@ module Rules =
 
     let proutes rule =
         rule
-        |> run (expr |>> Term.Flatten)
+        |> run expr
         |> Result.FromParseResult

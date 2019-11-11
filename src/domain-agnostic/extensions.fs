@@ -174,6 +174,13 @@ module Seq =
 
         get true, get false
 
+    let Crossproduct s1 s2 =
+        seq {
+            for e1 in s1 do
+                for e2 in s2 do
+                    yield e1, e2
+        }
+
     let AsyncMap func sequence =
         sequence
         |> Seq.map (func |> Async.New)

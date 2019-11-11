@@ -7,13 +7,13 @@ open Parsers.Rules
 module main =
 
     let C1 = """ PathPrefix(`path_prefix_1` ) """
-    let C2 = """ Host( 'host_1' , "host5" )"""
-    let C3 = """ Host("host6" , 'host_2', `something 5`)"""
+    let C2 = """ Host( 'host_1 '  )"""
+    let C3 = """ Host("host6 " )"""
 
-    let S1 = sprintf "%s && %s && %s" C1 C2 C3
-    let S2 = sprintf "%s || %s || %s" C1 C2 C3
+    let S1 = sprintf "%s&& %s && %s" C1 C2 C3
+    let S2 = sprintf "%s || %s ||%s" C1 C2 C3
 
-    let M1 = sprintf " ( %s && %s) || (%s && %s ) " C1 C2 C3 C1
+    let M1 = sprintf " ( %s && %s)|| (%s && %s ) " C1 C2 C3 C1
 
     let M2 = sprintf " (%s || %s) || (%s && %s) " C1 C2 C3 C1
 
@@ -21,7 +21,9 @@ module main =
 
     let M4 = sprintf "%s && %s || %s" C1 C2 C3
 
-    let M5 = sprintf "( %s && %s) && (%s && %s )" C1 C2 C1 C1
+    let M5 = sprintf " (%s && %s) && ( %s && %s )" C1 C2 C1 C1
+
+    let M6 = sprintf "%s || %s || (%s &&%s)" C1 C2 C3 C1
 
     let test rule =
         System.Console.WriteLine()
@@ -54,6 +56,7 @@ module main =
         test M3
         test M4
         test M5
+        test M6
 
         -1
         |> Async.Sleep
