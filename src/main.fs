@@ -2,10 +2,9 @@
 
 open DomainAgnostic
 open Consts
-open System
+open STD.State
 open STD.Env
 open DomainAgnostic.Globals
-open STD.Parsers.Traefik
 open Microsoft.Extensions.Hosting
 
 module Entry =
@@ -15,7 +14,12 @@ module Entry =
         echo README
 
         let deps = Opts()
-        use state = new GlobalVar<Route seq>(Seq.empty)
+
+        use state =
+            new GlobalVar<State>({ lastupdate = None
+                                   routes = { succ = Seq.empty
+                                              fail = Seq.empty } })
+
         use server = Server.Build deps state
         server.Run()
         echo TEXTDIVIDER

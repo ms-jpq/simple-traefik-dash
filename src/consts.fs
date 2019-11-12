@@ -32,6 +32,7 @@ Place *.csv under: %s
 Optionally: Add ignore lists based on Traefik Router names: [name]
 Place *.csv under: %s
 %s
+Status API :: /status
 """
 
 

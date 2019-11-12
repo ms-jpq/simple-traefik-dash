@@ -1,26 +1,38 @@
 namespace STD.Controllers
 
 open STD.Env
-open System
+open STD.State
 open DomainAgnostic
 open DomainAgnostic.Globals
 open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Logging
+open Thoth.Json.Net
 open STD.Parsers.Traefik
 
 
-[<Route("/")>]
-[<Controller>]
-type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<Route seq>) =
+[<Route("")>]
+type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<State>) =
     inherit Controller()
 
-    [<HttpGet("")>]
+    [<Route("")>]
     member __.Index() =
         async {
-            let! shared = state.Get()
+            let! s = state.Get()
 
-            let data = JsonResult shared
+            let res = ContentResult()
+            res.Content <- s.ToString()
 
-            return data :> ActionResult
+
+            return res :> ActionResult
+        }
+        |> Async.StartAsTask
+
+    [<Route("status")>]
+    member __.Status() =
+        async {
+            let! s = state.Get()
+            let d = deps.Boxed
+            return {| state = s
+                      deps = d |} |> JsonResult :> ActionResult
         }
         |> Async.StartAsTask

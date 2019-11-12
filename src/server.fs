@@ -4,11 +4,9 @@ open DomainAgnostic
 open DomainAgnostic.Globals
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
-open Microsoft.AspNetCore.Routing
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 open System
-open System.IO
 open STD.Env
 open STD.Services
 open STD.Consts
@@ -29,17 +27,17 @@ module Server =
 
     let private confApp (app: IApplicationBuilder) =
         app.UseStatusCodePages().UseDeveloperExceptionPage() |> ignore
-        app.UseRouting().UseEndpoints(fun endpoint -> endpoint.MapControllers() |> ignore) |> ignore
+        app.UseRouting().UseEndpoints(fun ep -> ep.MapControllers() |> ignore) |> ignore
 
-    let private confWebhost port (webhost: IWebHostBuilder) =
+    let private confWebhost deps gloabls (webhost: IWebHostBuilder) =
         webhost.UseKestrel() |> ignore
-        webhost.UseUrls(sprintf "http://0.0.0.0:%d" port) |> ignore
+        webhost.UseUrls(sprintf "http://0.0.0.0:%d" deps.port) |> ignore
+        webhost.ConfigureServices(confServices deps gloabls) |> ignore
         webhost.Configure(Action<IApplicationBuilder> confApp) |> ignore
 
     let Build<'D> (deps: Variables) (globals: GlobalVar<'D>) =
         let host = Host.CreateDefaultBuilder()
         host.UseContentRoot(CONTENTROOT) |> ignore
         host.ConfigureLogging(confLogging deps.logLevel) |> ignore
-        host.ConfigureServices(confServices deps globals) |> ignore
-        host.ConfigureWebHostDefaults(Action<IWebHostBuilder>(confWebhost deps.apiPort)) |> ignore
+        host.ConfigureWebHostDefaults(Action<IWebHostBuilder>(confWebhost deps globals)) |> ignore
         host.Build()

@@ -10,7 +10,7 @@ module Env =
 
     type Variables =
         { logLevel: LogLevel
-          apiPort: int
+          port: int
           traefikAPI: Uri
           entryPoints: string Set
           exitPort: int
@@ -61,7 +61,7 @@ module Env =
     let Opts() =
         let find = ENV() |> flip Map.tryFind
         { logLevel = pLog find
-          apiPort = pPort find
+          port = pPort find
           traefikAPI = pAPI find
           entryPoints = pEntryPoints find
           exitPort = pExitPort find

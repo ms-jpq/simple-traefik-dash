@@ -167,7 +167,7 @@ module Rules =
                 | Result.Ok v -> (Seq.Appending v good, bad)
                 | Result.Error e -> (good, Seq.Appending e bad)) (Seq.empty, Seq.empty)
 
-        good
+        good, bad
 
 
     let proutes rule =
