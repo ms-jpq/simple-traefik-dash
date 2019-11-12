@@ -6,9 +6,10 @@ open DomainAgnostic
 open DomainAgnostic.Globals
 open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Logging
+open STD.Parsers.Traefik
 
 [<Controller>]
-type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<int>) =
+type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<Route seq>) =
     inherit Controller()
 
     member __.Index() =
