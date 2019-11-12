@@ -1,4 +1,4 @@
-namespace STD.APIS
+namespace STD.Controllers
 
 open STD.Env
 open System
@@ -7,22 +7,17 @@ open DomainAgnostic.Globals
 open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Logging
 
-module Entry =
+[<Controller>]
+type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<int>) =
+    inherit Controller()
 
-    [<Route("/")>]
-    [<Controller>]
-    type MetricsClient(logger: ILogger<MetricsClient>, deps: Container<Variables>, state: GlobalVar<int>) =
-        inherit Controller()
+    member __.Index() =
+        async {
+            let! shared = state.Get()
 
-
-        [<HttpGet("/")>]
-        member __.Value() =
-            async {
-                let! shared = state.Get()
-
-                let data = JsonResult shared
+            let data = JsonResult shared
 
 
-                return data
-            }
-            |> Async.StartAsTask
+            return data
+        }
+        |> Async.StartAsTask

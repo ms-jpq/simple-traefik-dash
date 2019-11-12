@@ -19,10 +19,10 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Thoth.Json.Net
 open STD.Parsers.Traefik
+open STD.Controllers
 open DomainAgnostic.Timers
 
 module Entry =
-
 
     [<EntryPoint>]
     let main argv =
@@ -30,10 +30,9 @@ module Entry =
 
         let deps = Opts()
         use state = new GlobalVar<int>(1)
-
-        let server =
+        use server =
             ((WebHostBuilder().UseKestrel().UseUrls(sprintf "http://localhost:%d" deps.apiPort)
-                .ConfigureLogging(fun logging -> logging.AddConsole().AddFilter((<=) LogLevel.Information) |> ignore)
+                .ConfigureLogging(fun logging -> logging.AddConsole().AddFilter((<=) LogLevel.Debug) |> ignore)
                 .ConfigureServices
                 (fun services ->
                 (services.AddSingleton(Container(deps)).AddSingleton(state)).AddHostedService<PollingService>()
@@ -42,9 +41,8 @@ module Entry =
                 (fun app ->
                 app.UseStatusCodePages().UseDeveloperExceptionPage().UseStaticFiles().UseRouting()
                    .UseEndpoints((fun endpoint ->
-                   endpoint.MapControllerRoute("default", "{controller=Home}/{action=Index}") |> ignore)) |> ignore))
-                .Build()
-
+                   endpoint.MapControllerRoute("default", "{controller=Entry}/{action=Index}") |> ignore)) |> ignore))
+                .CaptureStartupErrors(true).Build()
         server.Start()
         echo TEXTDIVIDER
 

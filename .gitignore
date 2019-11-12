@@ -3,7 +3,6 @@ node_modules
 package-lock.json
 out
 *.css.d.ts
-wasm_go.js
 npm-debug.log
 obj
 bin
@@ -13,3 +12,4 @@ paket-files/
 paket.lock
 packages/
 .secrets
+temp
