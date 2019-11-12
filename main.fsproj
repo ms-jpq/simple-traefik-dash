@@ -32,8 +32,7 @@
   <ItemGroup>
     <Compile Include="src/services/polling-service.fs" />
     <Compile Include="src/views/traefik-services.fs" />
-    <Compile Include="src/apis/entry.fs" />
-    <Compile Include="src/srv.fs" />
+    <Compile Include="src/controllers/entry.fs" />
   </ItemGroup>
 
   <ItemGroup>

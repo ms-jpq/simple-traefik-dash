@@ -47,4 +47,4 @@ Place *.csv under: %s
 
     let APIROUTERS = "/api/http/routers"
 
-    let WEBSRVPORT = 80
+    let WEBSRVPORT = 8080

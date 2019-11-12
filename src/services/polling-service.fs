@@ -29,8 +29,9 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
 
     let poll() =
         async {
+            echo state
             let! response = client.GetStringAsync(deps.Boxed.traefikAPI) |> Async.AwaitTask
-
+            echo response
 
 
             return 0 }
