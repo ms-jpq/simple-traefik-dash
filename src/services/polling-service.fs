@@ -4,13 +4,13 @@ open DomainAgnostic
 open DomainAgnostic.Timers
 open STD.Env
 open STD.Consts
+open STD.Parsers.Traefik
 open System
 open Microsoft.Extensions.Logging
 open DomainAgnostic.Globals
 open Microsoft.Extensions.Hosting
 open System.Net.Http
-open System.Text.Json
-
+open Thoth.Json.Net
 
 type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>, state: GlobalVar<int>) =
 
@@ -23,24 +23,25 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
 
     let wait = NewTicker POLLINGRATE
 
-    let errHandle err prev =
-        logger.LogError("", [ err ])
+    let parse = materialize deps.Boxed.exitPort deps.Boxed.entryPoints deps.Boxed.ignoreRoutes
+
+    let errHandle (err: exn) prev =
+        logger.LogError(err.Message, err.StackTrace)
         prev |> Async.Return
+
 
     let poll() =
         async {
-            echo state
             let! response = client.GetStringAsync(deps.Boxed.traefikAPI) |> Async.AwaitTask
-            echo response
+            let routes = parse response
+            echo routes
+            return ()
+        }
 
-
-            return 0 }
 
     let runloop _ _ =
         async {
-
-
-
+            do! poll()
             do! wait() |> Async.Ignore
             return ()
         }
@@ -58,5 +59,4 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
     override __.Dispose() =
         agent |> IDisposable.DisposeOf
         client |> IDisposable.DisposeOf
-        logger.LogInformation("Stopping Polling Service")
         logger.LogInformation("Stopping Polling Service")

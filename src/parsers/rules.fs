@@ -135,7 +135,12 @@ module Rules =
 
         let construct m =
             let host = Map.tryFind "host" m
-            let path = Map.tryFind "pathprefix" m |> Option.defaultValue ""
+
+            let path =
+                Map.tryFind "pathprefix" m
+                |> Option.map (flip (+) "/")
+                |> Option.defaultValue ""
+
             host
             |> Option.map (fun h ->
                 { host = h
@@ -147,17 +152,22 @@ module Rules =
         |> Result.bind construct
         |> Result.mapError (fun err -> (prettyPrint route, err))
 
+
     let assemble terms =
         let routes =
             match terms with
             | Group g -> g
             | Routes r -> r
-        routes
-        |> Seq.map tryConstruct
-        |> Seq.fold (fun (good, bad) curr ->
-            match curr with
-            | Result.Ok v -> (Seq.Appending v good, bad)
-            | Result.Error e -> (good, Seq.Appending e bad)) (Seq.empty, Seq.empty)
+
+        let (good, bad) =
+            routes
+            |> Seq.map tryConstruct
+            |> Seq.fold (fun (good, bad) curr ->
+                match curr with
+                | Result.Ok v -> (Seq.Appending v good, bad)
+                | Result.Error e -> (good, Seq.Appending e bad)) (Seq.empty, Seq.empty)
+
+        good
 
 
     let proutes rule =

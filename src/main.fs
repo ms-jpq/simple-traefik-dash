@@ -10,8 +10,19 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.HttpsPolicy
+open Microsoft.AspNetCore.Mvc
+open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Hosting
+open Thoth.Json.Net
+open STD.Parsers.Traefik
+open DomainAgnostic.Timers
 
 module Entry =
+
 
     [<EntryPoint>]
     let main argv =
@@ -20,8 +31,8 @@ module Entry =
         let deps = Opts()
         use state = new GlobalVar<int>(1)
 
-        let srv =
-            ((WebHostBuilder().UseKestrel().UseUrls(sprintf "http://0.0.0.0:%d" deps.apiPort)
+        let server =
+            ((WebHostBuilder().UseKestrel().UseUrls(sprintf "http://localhost:%d" deps.apiPort)
                 .ConfigureLogging(fun logging -> logging.AddConsole().AddFilter((<=) LogLevel.Information) |> ignore)
                 .ConfigureServices
                 (fun services ->
@@ -34,7 +45,7 @@ module Entry =
                    endpoint.MapControllerRoute("default", "{controller=Home}/{action=Index}") |> ignore)) |> ignore))
                 .Build()
 
-        srv.Start()
+        server.Start()
         echo TEXTDIVIDER
 
         0

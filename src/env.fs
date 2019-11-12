@@ -12,9 +12,9 @@ module Env =
         { logLevel: LogLevel
           apiPort: int
           traefikAPI: Uri
-          entryPoints: string seq
+          entryPoints: string Set
           exitPort: int
-          ignoreRoutes: string seq }
+          ignoreRoutes: string Set }
 
 
     let private prefix = sprintf "%s_%s" ENVPREFIX
@@ -37,13 +37,14 @@ module Env =
 
     let private pAPI find =
         find (prefix "TRAEFIK_API")
-        |> Option.bind Parse.Uri
+        |> Option.bind ((fun (str: string) -> str + APIROUTERS) >> Parse.Uri)
         |> required "TRAEFIK_API"
 
     let private pEntryPoints find =
         find (prefix "TRAEFIK_ENTRY_POINTS")
         |> Option.map (fun (s: string) -> s.Split(","))
         |> Option.bind Seq.NilIfEmpty
+        |> Option.map Set
         |> required "TRAEFIK_ENTRY_POINTS"
 
     let private pExitPort find =
@@ -55,7 +56,7 @@ module Env =
         find (prefix "TRAEFIK_IGNORE_ROUTES")
         |> Option.map (fun (s: string) -> s.Split(","))
         |> Option.defaultValue [||]
-
+        |> Set
 
     let Opts() =
         let find = ENV() |> flip Map.tryFind
