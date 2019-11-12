@@ -33,7 +33,6 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
             do! parse response
                 |> Result.ForceUnwrap
                 |> state.Put
-                |> Async.Ignore
         }
 
     let runloop _ _ =
@@ -42,17 +41,19 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
             do! wait() |> Async.Ignore
         }
 
-    let agent = Agent.StartSupervised errHandle runloop ()
+    let mutable agent = Option<Agent<unit>>.None
 
-
-    override __.ExecuteAsync _ =
+    override __.ExecuteAsync token =
         logger.LogInformation("Started Polling Service")
+        agent <- Agent.Supervised errHandle runloop () token |> Some
+        agent |> Option.map (fun a -> a.Start()) |> ignore
         -1
         |> Async.Sleep
         |> Async.StartAsPlainTask
 
 
     override __.Dispose() =
-        agent |> IDisposable.DisposeOf
+        base.Dispose()
+        agent |> Option.map IDisposable.DisposeOf |> ignore
         client |> IDisposable.DisposeOf
         logger.LogInformation("Stopping Polling Service")

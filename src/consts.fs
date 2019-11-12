@@ -5,6 +5,8 @@ open System.IO
 
 module Consts =
 
+    let CONTENTROOT = Directory.GetCurrentDirectory()
+
     let CSVCOLUMNS = [ "name"; "uri" ]
 
     let CSVDIR = Directory.GetCurrentDirectory() + "/more-routes/"
