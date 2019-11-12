@@ -10,10 +10,8 @@ open Microsoft.Extensions.Logging
 open DomainAgnostic.Globals
 open Microsoft.Extensions.Hosting
 open System.Net.Http
-open Thoth.Json.Net
 
-type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>, state: GlobalVar<int>) =
-
+type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>, state: GlobalVar<Route seq>) =
     inherit BackgroundService()
 
     let client =
@@ -29,21 +27,19 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
         logger.LogError(err.Message, err.StackTrace)
         prev |> Async.Return
 
-
-    let poll() =
+    let poll _ =
         async {
             let! response = client.GetStringAsync(deps.Boxed.traefikAPI) |> Async.AwaitTask
-            let routes = parse response
-            echo routes
-            return ()
+            do! parse response
+                |> Result.ForceUnwrap
+                |> state.Put
+                |> Async.Ignore
         }
-
 
     let runloop _ _ =
         async {
             do! poll()
             do! wait() |> Async.Ignore
-            return ()
         }
 
     let agent = Agent.StartSupervised errHandle runloop ()

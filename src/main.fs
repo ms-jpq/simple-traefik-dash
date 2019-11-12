@@ -17,10 +17,9 @@ open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
-open Thoth.Json.Net
 open STD.Parsers.Traefik
 open STD.Controllers
-open DomainAgnostic.Timers
+open System.IO
 
 module Entry =
 
@@ -29,14 +28,15 @@ module Entry =
         echo README
 
         let deps = Opts()
-        use state = new GlobalVar<int>(1)
+        use state = new GlobalVar<Route seq>(Seq.empty)
         use server =
             ((WebHostBuilder().UseKestrel().UseUrls(sprintf "http://localhost:%d" deps.apiPort)
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureLogging(fun logging -> logging.AddConsole().AddFilter((<=) LogLevel.Debug) |> ignore)
                 .ConfigureServices
                 (fun services ->
-                (services.AddSingleton(Container(deps)).AddSingleton(state)).AddHostedService<PollingService>()
-                    .AddControllersWithViews() |> ignore))
+                services.AddSingleton(Container deps).AddSingleton(state).AddHostedService<PollingService>()
+                    .AddControllers() |> ignore))
                 .Configure
                 (fun app ->
                 app.UseStatusCodePages().UseDeveloperExceptionPage().UseStaticFiles().UseRouting()
