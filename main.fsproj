@@ -26,11 +26,17 @@
 
   <ItemGroup>
     <Compile Include="src/consts.fs" />
+    <Compile Include="src/env.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src/env.fs" />
+    <Compile Include="src/services/polling-service.fs" />
+    <Compile Include="src/views/traefik-services.fs" />
+    <Compile Include="src/apis/entry.fs" />
     <Compile Include="src/srv.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="src/main.fs" />
   </ItemGroup>
 

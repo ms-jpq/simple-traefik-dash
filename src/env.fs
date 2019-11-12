@@ -10,6 +10,7 @@ module Env =
 
     type Variables =
         { logLevel: LogLevel
+          apiPort: int
           traefikAPI: Uri
           entryPoints: string seq
           exitPort: int
@@ -18,7 +19,10 @@ module Env =
 
     let private prefix = sprintf "%s_%s" ENVPREFIX
 
-    let private required name v = (sprintf "MISSING ENVIRONMENTAL VARIABLE %s" (prefix name), v) ||> Option.ForceUnwrap
+    let private required name =
+        let err =
+            sprintf "\n\n\n-- MISSING ENVIRONMENTAL VARIABLE :: [%s] --\n\n\n" (prefix name)
+        err |> Option.ForceUnwrap
 
 
     let private pLog find =
@@ -26,31 +30,37 @@ module Env =
         |> Option.bind Parse.Enum<LogLevel>
         |> Option.Recover LogLevel.Warning
 
+    let private pPort find =
+        find (prefix "PORT")
+        |> Option.bind Parse.Int
+        |> Option.Recover WEBSRVPORT
+
     let private pAPI find =
         find (prefix "TRAEFIK_API")
         |> Option.bind Parse.Uri
         |> required "TRAEFIK_API"
 
     let private pEntryPoints find =
-        find (prefix "ENTRY_POINTS")
+        find (prefix "TRAEFIK_ENTRY_POINTS")
         |> Option.map (fun (s: string) -> s.Split(","))
         |> Option.bind Seq.NilIfEmpty
-        |> required "ENTRY_POINTS"
+        |> required "TRAEFIK_ENTRY_POINTS"
 
     let private pExitPort find =
-        find (prefix "EXIT_PORT")
+        find (prefix "TRAEFIK_EXIT_PORT")
         |> Option.bind Parse.Int
-        |> required "EXIT_PORT"
+        |> required "TRAEFIK_EXIT_PORT"
 
     let private pIgnoreRoutes find =
-        find (prefix "IGNORE_ROUTES")
+        find (prefix "TRAEFIK_IGNORE_ROUTES")
         |> Option.map (fun (s: string) -> s.Split(","))
-        |> Option.Recover [||]
+        |> Option.defaultValue [||]
 
 
     let Opts() =
         let find = ENV() |> flip Map.tryFind
         { logLevel = pLog find
+          apiPort = pPort find
           traefikAPI = pAPI find
           entryPoints = pEntryPoints find
           exitPort = pExitPort find

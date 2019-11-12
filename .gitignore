@@ -12,3 +12,4 @@ bin
 paket-files/
 paket.lock
 packages/
+.secrets
