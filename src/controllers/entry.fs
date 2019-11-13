@@ -2,12 +2,11 @@ namespace STD.Controllers
 
 open STD.Env
 open STD.State
+open STD.Views.TraefikServices
 open DomainAgnostic
 open DomainAgnostic.Globals
 open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.Logging
-open Thoth.Json.Net
-open STD.Parsers.Traefik
 
 
 [<Route("")>]
@@ -18,9 +17,9 @@ type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<
     member __.Index() =
         async {
             let! s = state.Get()
-
             let res = ContentResult()
-            res.Content <- s.ToString()
+            res.ContentType <- "text/html; charset=UTF-8"
+            res.Content <- Print s.routes.succ
 
 
             return res :> ActionResult

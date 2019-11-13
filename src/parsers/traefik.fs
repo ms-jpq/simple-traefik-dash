@@ -76,7 +76,6 @@ module Traefik =
                 { name = n
                   location = l
                   uris = uris })
-            |> Seq.sortBy (fun e -> e.name)
 
         let fail =
             bad
@@ -85,7 +84,6 @@ module Traefik =
                 { name = n
                   location = l
                   reason = c })
-            |> Seq.sortBy (fun e -> e.name)
 
         succ, fail
 

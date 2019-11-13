@@ -11,7 +11,8 @@ module CSV =
     let parseIgnore dir = async { () }
 
 
-    let parse() = async {
-      let k = 12
-      12
-     }
+    let parse() =
+        async {
+            let k = 12
+            12
+        }
