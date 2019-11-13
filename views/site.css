@@ -1,0 +1,52 @@
+body {
+  min-height: 100vh;
+  max-height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("background.png");
+}
+
+main {
+  /* min-width: 40vw; */
+  max-width: 90vw;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+main > a {
+  width: 7em;
+  overflow: hidden;
+}
+
+figure {
+  display: flex;
+  flex-direction: column;
+}
+
+figure > h1 {
+  margin-bottom: 0.1em;
+}
+
+figure > * {
+  align-self: center;
+  text-align: center;
+  text-overflow: ellipsis;
+}
+
+footer {
+  margin-top: 10em;
+  display: flex;
+  flex-direction: column;
+}
+
+footer > * {
+  align-self: center;
+}
+
+
+a {
+  color: #2A2A2A;
+}
