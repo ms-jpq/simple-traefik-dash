@@ -18,6 +18,7 @@ module TraefikServices =
                     link
                         [ _rel "stylesheet"
                           _href "site.css" ]
+                    script [ _src "script.js" ] []
                     title [] [ str tit ] ]
               body [] bdy ]
 
