@@ -5,6 +5,8 @@ open System.IO
 
 module Consts =
 
+    let PROJECTURI = "https://ms-jpq.github.io/simple-traefik-dash/"
+
     let CONTENTROOT = Directory.GetCurrentDirectory()
 
     let ROUTESDIR = CONTENTROOT + "/more-routes/"
@@ -30,17 +32,15 @@ Host(<xyz>) [required] and PathPrefix(<zyx>) [optional]
 CSV imports requires 2 columns: [name, uri]
 Place *.csv under: %s
 %s
-Optionally: Add ignore lists based on Traefik Router names: [name]
+Optionally: Add ignore lists based on (!Traefik Router!) names: [name]
 Place *.csv under: %s
 %s
-Status API :: /status
 """
-
 
 
     let README = readme TEXTDIVIDER "\n" ROUTESDIR "\n" BLOCKSDIR TEXTDIVIDER
 
-    let ENVPREFIX = "SD"
+    let ENVPREFIX = "STD"
 
     let DEFAULTPORTS = [ ("http", 90), ("https", 443) ] |> Map.ofSeq
 
@@ -50,6 +50,6 @@ Status API :: /status
 
     let APIROUTERS = "/api/http/routers"
 
-    let WEBSRVPORT = 8080
+    let WEBSRVPORT = 5050
 
     let DEFAULTTITLE = "Simple Traefik Dash"

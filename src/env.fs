@@ -14,7 +14,6 @@ module Env =
           traefikAPI: Uri
           entryPoints: string Set
           exitPort: int
-          ignoreRoutes: string Set
           title: string }
 
 
@@ -53,11 +52,6 @@ module Env =
         |> Option.bind Parse.Int
         |> required "TRAEFIK_EXIT_PORT"
 
-    let private pIgnoreRoutes find =
-        find (prefix "TRAEFIK_IGNORE_ROUTES")
-        |> Option.map (fun (s: string) -> s.Split(","))
-        |> Option.defaultValue [||]
-        |> Set
 
     let private pTitle find = find (prefix "TITLE") |> Option.Recover DEFAULTTITLE
 
@@ -68,5 +62,4 @@ module Env =
           traefikAPI = pAPI find
           entryPoints = pEntryPoints find
           exitPort = pExitPort find
-          ignoreRoutes = pIgnoreRoutes find
           title = pTitle find }

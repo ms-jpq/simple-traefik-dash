@@ -3,6 +3,7 @@ namespace STD.Views
 open DomainAgnostic
 open Giraffe.GiraffeViewEngine
 open STD.Parsers.Traefik
+open STD.Consts
 
 
 module TraefikServices =
@@ -20,8 +21,13 @@ module TraefikServices =
                     title [] [ str tit ] ]
               body [] bdy ]
 
-    let Layout contents = div [] contents |> List.singleton
-
+    let Layout contents =
+        div []
+            [ main [] contents
+              footer []
+                  [ a [ _href PROJECTURI ] [ str "Find me on Github" ]
+                    a [ _href "status" ] [ str "status api" ] ] ]
+        |> List.singleton
 
     let prettifyName (name: string) =
         (name.Split('-', '_') |> String.concat " ").Split(' ')
@@ -39,16 +45,15 @@ module TraefikServices =
         let pretty = prettifyName name
 
         let big =
-            name
+            pretty
             |> Seq.tryHead
             |> Option.map ToString
             |> Option.defaultValue ""
 
-        a
-            [ _href uri
-              _class "bg-light" ]
-            [ button [ _class "top-img" ] [ p [] [ str big ] ]
-              p [ _class "bottom-text" ] [ str pretty ] ]
+        a [ _href uri ]
+            [ figure []
+                  [ h1 [] [ str big ]
+                    figcaption [] [ str pretty ] ] ]
 
     let disperse { name = n; uris = us } =
         match us |> List.ofSeq with

@@ -35,17 +35,18 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
             let! traefik = _traefik
             let! (r1, ignore, errs) = _csv
             let (r2, failed) = parse traefik |> Result.ForceUnwrap
-            let ignoring = ignore ++ deps.Boxed.ignoreRoutes |> Set
+            let ignoring = Set ignore
 
             let routes =
-                r1 ++ r2
+                r2
                 |> Seq.filter (fun r -> (Set.contains r.name >> not) ignoring)
+                |> (++) r1
                 |> Seq.sortBy (fun r -> r.name)
 
             let ns =
                 { lastupdate = Some DateTime.UtcNow
                   errors = errs
-                  ignoring = ignore
+                  ignoring = ignoring
                   routes =
                       { succ = routes
                         fail = failed } }
