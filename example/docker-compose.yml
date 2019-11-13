@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  # SIMPLE TRAEFIK DASH #
+  std:
+    image:
+    labels:
+      - traefik.http.services.std.loadbalancer.server.port=5050
+      - traefik.http.routers.std.tls.options=default
+      - traefik.http.routers.std.rule=Host("<something>")
+    environment:
+      -
+      -
+    volumes:
+      - ./more-routes/:/std/more-routes/ # OPTIONAL
+      - ./ignore-routes/:/std/ignore-routes/ # OPTONAL
+      - ./views/:/std/views/ # ONLY IF YOU WANT TO LOAD CUSTOM JS OR CSS
+
+networks:
+  default:
+    external: true
+    name: traefik-reverse-proxy
