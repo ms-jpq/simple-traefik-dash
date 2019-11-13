@@ -1,13 +1,14 @@
 # Simple Traefik Dash
 
-Zero conf service dashboard for [Traefik v2](https://traefik.io/) reverse proxy
+**Zero conf** service dashboard for [Traefik v2](https://traefik.io/) reverse proxy
 
 Parses Traefik's [Routers](https://docs.traefik.io/routing/overview/) and generates all deterministic routes
 
 ## Screenshot
 
 **You can totally change this background, don't worry**
-![promo img](https://raw.githubusercontent.com/ms-jpq/simple-traefik-dash/master/example/screenshot.png)
+
+![promo img](https://raw.githubusercontent.com/ms-jpq/simple-traefik-dash/master/example/screenshot2.png)
 
 ## Usage
 

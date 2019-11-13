@@ -172,3 +172,17 @@ module Rules =
         rule
         |> run parse
         |> Result.FromParseResult
+
+    let UserPrint rule =
+        let res = proutes rule
+        match res with
+        | Result.Error e -> echo e
+        | Result.Ok(good, bad) ->
+            echo "Broke down all possible combinations:"
+            if (Seq.isEmpty >> not) good then
+                echo "------- Matched routes -------"
+                good |> Seq.iter (fun { host = h; pathPrefix = p } -> sprintf "%s/%s" h p |> echo)
+            echo ""
+            if (Seq.isEmpty >> not) bad then
+                echo "------- Not matched -------"
+                bad |> Seq.iter echo

@@ -15,16 +15,13 @@ module Consts =
 
     let RESOURCESDIR = CONTENTROOT + "/views/"
 
-    let TEXTDIVIDER = """
-==============================================================================
-    """
 
     let private readme =
         sprintf """
 Simple Traefik Dash (STD)
 STD will watch Traefik, and automatically generate a dashboard
 STD can also import more routes via CSV.
-%s
+==============================================================================
 RULES:
 STD generates routes based on two Router predicates:
 Host(<xyz>) [required] and PathPrefix(<zyx>) [optional]
@@ -32,13 +29,15 @@ Host(<xyz>) [required] and PathPrefix(<zyx>) [optional]
 CSV imports requires 2 columns: [name, uri]
 Place *.csv under: %s
 %s
-Optionally: Add ignore lists based on (!Traefik Router!) names: [name]
+Optionally: Add ignore lists based on Traefik Router names: [name]
 Place *.csv under: %s
-%s
+==============================================================================
+https://github.com/ms-jpq/simple-traefik-dash
 """
 
 
-    let README = readme TEXTDIVIDER "\n" ROUTESDIR "\n" BLOCKSDIR TEXTDIVIDER
+    let README =
+        readme "\n" ROUTESDIR "\n" BLOCKSDIR
 
     let ENVPREFIX = "STD"
 

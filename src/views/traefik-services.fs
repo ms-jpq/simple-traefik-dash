@@ -26,8 +26,8 @@ module TraefikServices =
         div []
             [ main [] contents
               footer []
-                  [ a [ _href PROJECTURI ] [ str "Find me on Github" ]
-                    a [ _href "status" ] [ str "API" ] ] ]
+                  [ a [ _href "status" ] [ str "API" ]
+                    a [ _href PROJECTURI ] [ str "github" ] ] ]
         |> List.singleton
 
     let Route uri (name: string) =
