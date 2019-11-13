@@ -1,9 +1,4 @@
 .DS_Store
-node_modules
-package-lock.json
-out
-*.css.d.ts
-npm-debug.log
 obj
 bin
 .ionide
@@ -12,6 +7,14 @@ paket-files/
 paket.lock
 packages/
 .secrets
+.fake
+build.fsx.lock
 temp
+node_modules
+package-lock.json
+out
+*.css.d.ts
+npm-debug.log
 ./ignore-routes
 ./more-routes
+
