@@ -9,13 +9,15 @@ open Fake.Core.TargetOperators
 Target.initEnvironment ()
 
 Target.create "Clean" (fun _ ->
-    !! "./**/bin"
-    ++ "./**/obj"
+    !! "src/**/bin"
+    ++ "src/**/obj"
+    ++ "tests/**/obj"
+    ++ "tests/**/obj"
     |> Shell.cleanDirs
 )
 
 Target.create "Build" (fun _ ->
-    !! "./**/*.*proj"
+    !! "src/**/*.*proj"
     |> Seq.iter (DotNet.build id)
 )
 

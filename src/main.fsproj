@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\paket-files\giraffe-fsharp\Giraffe\src\Giraffe\GiraffeViewEngine.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/GiraffeViewEngine.fs</Link>
+    </Compile>
+  </ItemGroup>
+  <ImportGroup>
+    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/maplestory-jpq/fda/src/domain-agnostic/export.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/maplestory-jpq/fda/src/fparsec-exts/export.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/maplestory-jpq/fda/src/dotnet-exts/export.targets" />
+  </ImportGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)/consts.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/env.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)/parsers/rules.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/parsers/traefik.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/parsers/csv.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)/state.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/services/polling-service.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/views/traefik-services.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/controllers/entry.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/server.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)/entry.fs" />
+  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>
