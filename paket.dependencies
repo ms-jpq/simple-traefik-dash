@@ -2,6 +2,7 @@ source https://api.nuget.org/v3/index.json
 
 nuget FSharp.Core
 nuget FParsec
+nuget FSharp.Data
 nuget Thoth.Json.Net
 
 github maplestory-jpq/fda

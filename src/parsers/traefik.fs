@@ -32,14 +32,9 @@ module Traefik =
           location: string
           reason: string }
 
-    type TraefikRoutes =
-        { succ: Route seq
-          fail: FailedRoute seq }
-
-
     let decode = Decode.array RawRoute.Decoder |> Decode.fromString
 
-    let parse using ignored json =
+    let parse using json =
         result {
             let! candidates = decode json |> Result.mapError Exception
             let (good, bad) =
@@ -87,10 +82,9 @@ module Traefik =
 
         succ, fail
 
-    let materialize port using ignored json =
+    let materialize port using json =
         result {
-            let! (good, bad) = parse using ignored json
+            let! (good, bad) = parse using json
             let (succ, fail) = bin port good bad
-            return { succ = succ
-                     fail = fail }
+            return succ, fail
         }

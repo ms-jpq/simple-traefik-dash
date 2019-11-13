@@ -6,6 +6,7 @@ open STD.Env
 open STD.Consts
 open STD.State
 open STD.Parsers.Traefik
+open STD.Parsers.CSV
 open System
 open Microsoft.Extensions.Logging
 open DomainAgnostic.Globals
@@ -23,16 +24,34 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
 
     let wait = NewTicker POLLINGRATE
 
-    let parse = materialize deps.Boxed.exitPort deps.Boxed.entryPoints deps.Boxed.ignoreRoutes
+    let parse = materialize deps.Boxed.exitPort deps.Boxed.entryPoints
 
     let poll _ =
         async {
-            let! response = client.GetStringAsync(deps.Boxed.traefikAPI) |> Async.AwaitTask
-            let routes = parse response |> Result.ForceUnwrap
+            let! _csv = pCSV() |> Async.StartChild
+            let! _traefik = client.GetStringAsync(deps.Boxed.traefikAPI)
+                            |> Async.AwaitTask
+                            |> Async.StartChild
+            let! traefik = _traefik
+            let! (r1, ignore, errs) = _csv
+            let (r2, failed) = parse traefik |> Result.ForceUnwrap
+            let ignoring = ignore ++ deps.Boxed.ignoreRoutes |> Set
+
+            let routes =
+                r1 ++ r2
+                |> Seq.filter (fun r -> (Set.contains r.name >> not) ignoring)
+                |> Seq.sortBy (fun r -> r.name)
 
             let ns =
                 { lastupdate = Some DateTime.UtcNow
-                  routes = routes }
+                  errors = errs
+                  ignoring = ignore
+                  routes =
+                      { succ = routes
+                        fail = failed } }
+
+            errs |> Seq.iter logger.LogError
+
             return! ns |> state.Put
         }
 

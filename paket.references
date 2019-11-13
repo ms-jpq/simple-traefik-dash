@@ -1,5 +1,6 @@
 FSharp.Core
 FParsec
+FSharp.Data
 Thoth.Json.Net
 
 File: GiraffeViewEngine.fs

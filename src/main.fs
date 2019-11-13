@@ -17,6 +17,8 @@ module Entry =
 
         use state =
             new GlobalVar<State>({ lastupdate = None
+                                   errors = Seq.empty
+                                   ignoring = Seq.empty
                                    routes = { succ = Seq.empty
                                               fail = Seq.empty } })
 

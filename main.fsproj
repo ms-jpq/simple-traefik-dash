@@ -14,16 +14,16 @@
     <Import Project="$(MSBuildThisFileDirectory)/paket-files/maplestory-jpq/fda/src/dotnet-exts/export.targets" />
   </ImportGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)/src/consts.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/src/env.fs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)/src/parsers/rules.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)/src/parsers/traefik.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)/src/parsers/csv.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)/src/consts.fs" />
-    <Compile Include="$(MSBuildThisFileDirectory)/src/env.fs" />
-    <Compile Include="$(MSBuildThisFileDirectory)/src/state.fs" />
-  </ItemGroup>
-  <ItemGroup>
+      <Compile Include="$(MSBuildThisFileDirectory)/src/state.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)/src/services/polling-service.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)/src/views/traefik-services.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)/src/controllers/entry.fs" />

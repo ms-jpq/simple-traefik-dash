@@ -13,3 +13,5 @@ paket.lock
 packages/
 .secrets
 temp
+ignore-routes
+more-routes

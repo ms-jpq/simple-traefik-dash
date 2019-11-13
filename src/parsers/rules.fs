@@ -162,10 +162,7 @@ module Rules =
         let (good, bad) =
             routes
             |> Seq.map tryConstruct
-            |> Seq.fold (fun (good, bad) curr ->
-                match curr with
-                | Result.Ok v -> (Seq.Appending v good, bad)
-                | Result.Error e -> (good, Seq.Appending e bad)) (Seq.empty, Seq.empty)
+            |> Result.Discriminate
 
         good, bad
 

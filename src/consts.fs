@@ -7,11 +7,9 @@ module Consts =
 
     let CONTENTROOT = Directory.GetCurrentDirectory()
 
-    let CSVCOLUMNS = [ "name"; "uri" ]
+    let ROUTESDIR = CONTENTROOT + "/more-routes/"
 
-    let CSVDIR = CONTENTROOT + "/more-routes/"
-
-    let BLOCKLSTDIR = CONTENTROOT + "/ignore-routes/"
+    let BLOCKSDIR = CONTENTROOT + "/ignore-routes/"
 
     let RESOURCESDIR = CONTENTROOT + "/views/"
 
@@ -29,7 +27,7 @@ RULES:
 STD generates routes based on two Router predicates:
 Host(<xyz>) [required] and PathPrefix(<zyx>) [optional]
 %s
-CSV imports requires 2 columns: [%s]
+CSV imports requires 2 columns: [name, uri]
 Place *.csv under: %s
 %s
 Optionally: Add ignore lists based on Traefik Router names: [name]
@@ -40,7 +38,7 @@ Status API :: /status
 
 
 
-    let README = readme TEXTDIVIDER "\n" (String.concat "," CSVCOLUMNS) CSVDIR "\n" BLOCKLSTDIR TEXTDIVIDER
+    let README = readme TEXTDIVIDER "\n" ROUTESDIR "\n" BLOCKSDIR TEXTDIVIDER
 
     let ENVPREFIX = "SD"
 
