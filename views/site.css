@@ -4,11 +4,10 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   background-image: url("background.png");
+  background-color: aliceblue;
 }
 
 main {
-  /* min-width: 40vw; */
-  max-width: 90vw;
   margin: auto;
   display: flex;
   flex-direction: row;
@@ -16,24 +15,34 @@ main {
   justify-content: center;
 }
 
+a {
+  color: #2a2a2a;
+}
+
 main > a {
   width: 7em;
   overflow: hidden;
+  text-decoration: none;
 }
 
 figure {
   display: flex;
   flex-direction: column;
-}
-
-figure > h1 {
-  margin-bottom: 0.1em;
+  text-transform: capitalize;
 }
 
 figure > * {
   align-self: center;
   text-align: center;
   text-overflow: ellipsis;
+}
+
+figure > h1 {
+  margin-bottom: 0.1em;
+}
+
+figure > figcaption {
+  text-decoration: underline;
 }
 
 footer {
@@ -46,7 +55,14 @@ footer > * {
   align-self: center;
 }
 
+@media (max-width: 50em) {
+  main {
+    max-width: 95vw;
+  }
+}
 
-a {
-  color: #2A2A2A;
+@media (min-width: 50em) {
+  main {
+    width: 50em;
+  }
 }

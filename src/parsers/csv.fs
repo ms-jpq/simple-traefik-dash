@@ -9,7 +9,10 @@ open System.IO
 
 module CSV =
 
-    let read dir = Directory.EnumerateFiles(dir) |> Seq.map (fun f -> (f, f |> (File.ReadAllText >> CsvFile.Parse)))
+    let read dir =
+        Directory.EnumerateFiles(dir)
+        |> Seq.filter (fun f -> f.EndsWith(".csv"))
+        |> Seq.map (fun f -> (f, f |> (File.ReadAllText >> CsvFile.Parse)))
 
 
     let parseAdditional (file: string, csv: CsvFile) =

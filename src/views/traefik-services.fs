@@ -26,26 +26,14 @@ module TraefikServices =
             [ main [] contents
               footer []
                   [ a [ _href PROJECTURI ] [ str "Find me on Github" ]
-                    a [ _href "status" ] [ str "status api" ] ] ]
+                    a [ _href "status" ] [ str "API" ] ] ]
         |> List.singleton
 
-    let prettifyName (name: string) =
-        (name.Split('-', '_') |> String.concat " ").Split(' ')
-        |> Seq.map (fun s ->
-            match s |> List.ofSeq with
-            | [] -> ""
-            | h :: t ->
-                t
-                |> List.map ToString
-                |> List.Prepending(h.ToString().ToUpper())
-                |> String.concat "")
-        |> String.concat " "
-
-    let Route uri name =
-        let pretty = prettifyName name
+    let Route uri (name: string) =
+        let pretty = name.Replace('-', ' ').Replace('_', ' ')
 
         let big =
-            pretty
+            name
             |> Seq.tryHead
             |> Option.map ToString
             |> Option.defaultValue ""
