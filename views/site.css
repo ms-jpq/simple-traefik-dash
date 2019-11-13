@@ -7,6 +7,10 @@ body {
   background-color: aliceblue;
 }
 
+a {
+  color: #2a2a2a;
+}
+
 main {
   margin: auto;
   display: flex;
@@ -15,34 +19,34 @@ main {
   justify-content: center;
 }
 
-a {
-  color: #2a2a2a;
-}
-
-main > a {
-  width: 7em;
-  overflow: hidden;
-  text-decoration: none;
-}
-
 figure {
+  flex-basis: 7em;
+  margin-left: 0;
+  margin-right: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   text-transform: capitalize;
 }
 
 figure > * {
   align-self: center;
   text-align: center;
-  text-overflow: ellipsis;
 }
 
-figure > h1 {
+figure a {
+  text-decoration: none;
+}
+
+figure > a > h1 {
   margin-bottom: 0.1em;
 }
 
-figure > figcaption {
+figure > figcaption > a {
   text-decoration: underline;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 footer {
@@ -55,14 +59,14 @@ footer > * {
   align-self: center;
 }
 
-@media (max-width: 50em) {
+@media (max-width: 45em) {
   main {
-    max-width: 95vw;
+    width: 100vw;
   }
 }
 
-@media (min-width: 50em) {
+@media (min-width: 45em) {
   main {
-    width: 50em;
+    width: 45em;
   }
 }

@@ -38,10 +38,9 @@ module TraefikServices =
             |> Option.map ToString
             |> Option.defaultValue ""
 
-        a [ _href uri ]
-            [ figure []
-                  [ h1 [] [ str big ]
-                    figcaption [] [ str pretty ] ] ]
+        figure []
+            [ a [ _href uri ] [ h1 [] [ str big ] ]
+              figcaption [] [ a [ _href uri ] [ str pretty ] ] ]
 
     let disperse { name = n; uris = us } =
         match us |> List.ofSeq with
