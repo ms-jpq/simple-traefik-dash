@@ -32,6 +32,7 @@ module Server =
     let private confWebhost deps gloabls (webhost: IWebHostBuilder) =
         webhost.UseKestrel() |> ignore
         webhost.UseUrls(sprintf "http://0.0.0.0:%d" deps.port) |> ignore
+        webhost.UseWebRoot(RESOURCESDIR) |> ignore
         webhost.ConfigureServices(confServices deps gloabls) |> ignore
         webhost.Configure(Action<IApplicationBuilder> confApp) |> ignore
 

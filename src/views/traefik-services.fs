@@ -7,7 +7,7 @@ open STD.Parsers.Traefik
 
 module TraefikServices =
 
-    let Page bdy =
+    let Page tit bdy =
         html []
             [ head []
                   [ meta [ _charset "utf-8" ]
@@ -16,10 +16,8 @@ module TraefikServices =
                           _content "width=device-width, initial-scale=1" ]
                     link
                         [ _rel "stylesheet"
-                          _href "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-                          _integrity "sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-                          _crossorigin "anonymous" ]
-                    title [] [ str "STD" ] ]
+                          _href "site.css" ]
+                    title [] [ str tit ] ]
               body [] bdy ]
 
     let Layout contents = div [] contents |> List.singleton
@@ -33,7 +31,7 @@ module TraefikServices =
             | h :: t ->
                 t
                 |> List.map ToString
-                |> List.Prepending (h.ToString().ToUpper())
+                |> List.Prepending(h.ToString().ToUpper())
                 |> String.concat "")
         |> String.concat " "
 
@@ -58,10 +56,10 @@ module TraefikServices =
         | u -> u |> List.mapi (fun i u -> sprintf "%s-%d" n i |> Route u)
 
 
-    let Print routes =
+    let Print tit routes =
         routes
         |> List.ofSeq
         |> List.Bind disperse
         |> Layout
-        |> Page
+        |> Page tit
         |> renderHtmlDocument

@@ -14,15 +14,11 @@ type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<
     inherit Controller()
 
     [<Route("")>]
-    member __.Index() =
+    member self.Index() =
         async {
             let! s = state.Get()
-            let res = ContentResult()
-            res.ContentType <- "text/html; charset=UTF-8"
-            res.Content <- Print s.routes.succ
-
-
-            return res :> ActionResult
+            let html = Print deps.Boxed.title s.routes.succ
+            return self.Content(html, "text/html") :> ActionResult
         }
         |> Async.StartAsTask
 
@@ -32,6 +28,6 @@ type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<
             let! s = state.Get()
             let d = deps.Boxed
             return {| state = s
-                      deps = d |} |> JsonResult :> ActionResult
+                      ``params`` = d |} |> JsonResult :> ActionResult
         }
         |> Async.StartAsTask

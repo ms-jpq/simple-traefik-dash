@@ -9,8 +9,11 @@ module Consts =
 
     let CSVCOLUMNS = [ "name"; "uri" ]
 
-    let CSVDIR = Directory.GetCurrentDirectory() + "/more-routes/"
-    let BLOCKLSTDIR = Directory.GetCurrentDirectory() + "/ignore/"
+    let CSVDIR = CONTENTROOT + "/more-routes/"
+
+    let BLOCKLSTDIR = CONTENTROOT + "/ignore-routes/"
+
+    let RESOURCESDIR = CONTENTROOT + "/views/"
 
     let TEXTDIVIDER = """
 ==============================================================================
@@ -39,7 +42,6 @@ Status API :: /status
 
     let README = readme TEXTDIVIDER "\n" (String.concat "," CSVCOLUMNS) CSVDIR "\n" BLOCKLSTDIR TEXTDIVIDER
 
-
     let ENVPREFIX = "SD"
 
     let DEFAULTPORTS = [ ("http", 90), ("https", 443) ] |> Map.ofSeq
@@ -51,3 +53,5 @@ Status API :: /status
     let APIROUTERS = "/api/http/routers"
 
     let WEBSRVPORT = 8080
+
+    let DEFAULTTITLE = "Simple Traefik Dash"

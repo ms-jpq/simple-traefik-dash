@@ -14,7 +14,8 @@ module Env =
           traefikAPI: Uri
           entryPoints: string Set
           exitPort: int
-          ignoreRoutes: string Set }
+          ignoreRoutes: string Set
+          title: string }
 
 
     let private prefix = sprintf "%s_%s" ENVPREFIX
@@ -58,6 +59,8 @@ module Env =
         |> Option.defaultValue [||]
         |> Set
 
+    let private pTitle find = find (prefix "TITLE") |> Option.Recover DEFAULTTITLE
+
     let Opts() =
         let find = ENV() |> flip Map.tryFind
         { logLevel = pLog find
@@ -65,4 +68,5 @@ module Env =
           traefikAPI = pAPI find
           entryPoints = pEntryPoints find
           exitPort = pExitPort find
-          ignoreRoutes = pIgnoreRoutes find }
+          ignoreRoutes = pIgnoreRoutes find
+          title = pTitle find }
