@@ -32,7 +32,11 @@ simple-traefik-dash:
 
 You can test your Routers rules like so:
 
-`docker run --rm docker.pkg.github.com/ms-jpq/simple-traefik-dash/simple-traefik-dash "<RULE>"`
+`docker run --rm msjpq/simple-traefik-dash "<RULE>"`
+
+i.e.
+
+`docker run --rm msjpq/simple-traefik-dash  "Host('qbz', 'kfc') && (PathPrefix('chicken') || PathPrefix( '95' )) || Host('dog.org', 'otters.moo') && PathPrefix('cat')"`
 
 ## Customization
 
