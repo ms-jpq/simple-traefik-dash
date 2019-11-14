@@ -1,4 +1,4 @@
-# Simple Traefik Dash
+# [Simple Traefik Dash](https://ms-jpq.github.io/simple-traefik-dash/)
 
 **Zero conf** service dashboard for [Traefik v2](https://traefik.io/) reverse proxy
 
@@ -12,12 +12,10 @@ Parses Traefik's [Routers](https://docs.traefik.io/routing/overview/) and genera
 
 ## Usage
 
-_Unfortunately, Github's public package registery require auth at the moment._
-
 ```yml
 # SIMPLE TRAEFIK DASH #
 simple-traefik-dash:
-  image: docker.pkg.github.com/ms-jpq/simple-traefik-dash/simple-traefik-dash
+  image: msjpq/simple-traefik-dash
   labels:
     - traefik.http.services.std.loadbalancer.server.port=5050
     - traefik.http.routers.std.tls.options=default
