@@ -10,9 +10,9 @@
     </Compile>
   </ItemGroup>
   <ImportGroup>
-    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/maplestory-jpq/fda/src/domain-agnostic/export.targets" />
-    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/maplestory-jpq/fda/src/fparsec-exts/export.targets" />
-    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/maplestory-jpq/fda/src/dotnet-exts/export.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/ms-jpq/fda/src/domain-agnostic/export.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/ms-jpq/fda/src/fparsec-exts/export.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)/../paket-files/ms-jpq/fda/src/dotnet-exts/export.targets" />
   </ImportGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)/consts.fs" />

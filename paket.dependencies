@@ -5,5 +5,5 @@ nuget FParsec
 nuget FSharp.Data
 nuget Thoth.Json.Net
 
-github maplestory-jpq/fda
+github ms-jpq/fda
 github giraffe-fsharp/Giraffe src/Giraffe/GiraffeViewEngine.fs
