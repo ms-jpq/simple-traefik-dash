@@ -59,8 +59,11 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
     let mutable agent = Option<Agent<unit>>.None
 
     let errHandle (err: exn) prev =
-        logger.LogError(err.Message, err.StackTrace)
-        prev |> Async.Return
+        async {
+            logger.LogError(err.Message, err.StackTrace)
+            do! wait() |> Async.Ignore
+            return prev
+        }
 
     let runloop _ _ =
         async {

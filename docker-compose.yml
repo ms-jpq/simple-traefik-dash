@@ -13,8 +13,6 @@ services:
       - STD_TRAEFIK_API=${STD_TRAEFIK_API}
       - STD_TRAEFIK_ENTRY_POINTS=${STD_TRAEFIK_ENTRY_POINTS}
       - STD_TRAEFIK_EXIT_PORT=${STD_TRAEFIK_EXIT_PORT}
-      - STD_PORT=5050
-      - STD_LOG_LEVEL=debug
     ports:
       - 5050:5050
     volumes:
