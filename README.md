@@ -26,6 +26,7 @@ simple-traefik-dash:
     - STD_TRAEFIK_API=http://traefik:8080/ # Required, make sure you can actually talk to Traefik
     - STD_TRAEFIK_ENTRY_POINTS=web-secure # Required, only routes using entrypoints will be parsed
     - STD_TRAEFIK_EXIT_PORT=443 # Required, your exit port
+    - STD_TITLE=🐳 # Optional, page title
   volumes:
     - ./more.csv:/std/more-routes/more.csv # Optional - CSV Columns: name, uri
     - ./ignore.csv:/std/ignore-routes/ignore.csv # Optional - CSV Column: name
