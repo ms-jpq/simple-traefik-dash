@@ -37,7 +37,7 @@ module Env =
 
     let private pAPI find =
         find (prefix "TRAEFIK_API")
-        |> Option.bind ((fun (str: string) -> str + APIROUTERS) >> Parse.Uri)
+        |> Option.bind ((fun (str: string) -> str.TrimEnd('/') + APIROUTERS) >> Parse.Uri)
         |> required "TRAEFIK_API"
 
     let private pEntryPoints find =
