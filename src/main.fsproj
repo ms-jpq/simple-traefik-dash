@@ -26,7 +26,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)/state.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)/services/polling-service.fs" />
-    <Compile Include="$(MSBuildThisFileDirectory)/views/traefik-services.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)/pages/traefik-dash.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)/controllers/entry.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)/server.fs" />
   </ItemGroup>

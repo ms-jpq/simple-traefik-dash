@@ -9,6 +9,7 @@ services:
   #
   std:
     build: .
+    container_name: std
     environment:
       - STD_TRAEFIK_API=${STD_TRAEFIK_API}
       - STD_TRAEFIK_ENTRY_POINTS=${STD_TRAEFIK_ENTRY_POINTS}

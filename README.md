@@ -8,7 +8,7 @@ Parses Traefik's [Routers](https://docs.traefik.io/routing/overview/) and genera
 
 **You can totally change this background, don't worry**
 
-![promo img](https://raw.githubusercontent.com/ms-jpq/simple-traefik-dash/master/example/screenshot2.png)
+![promo img](https://raw.githubusercontent.com/ms-jpq/simple-traefik-dash/master/example/screenshot.png)
 
 ## Usage
 

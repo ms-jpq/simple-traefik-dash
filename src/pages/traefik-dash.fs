@@ -6,7 +6,7 @@ open STD.Parsers.Traefik
 open STD.Consts
 
 
-module TraefikServices =
+module Dashboard =
 
     let Page tit bdy =
         html []
@@ -35,9 +35,9 @@ module TraefikServices =
 
         let big =
             name
-            |> Seq.tryHead
-            |> Option.map ToString
-            |> Option.defaultValue ""
+            |> Seq.truncate 2
+            |> Seq.map ToString
+            |> String.concat ""
 
         figure []
             [ a [ _href uri ] [ h1 [] [ str big ] ]
@@ -49,7 +49,7 @@ module TraefikServices =
         | u -> u |> List.mapi (fun i u -> sprintf "%s-%d" n i |> Route u)
 
 
-    let Print tit routes =
+    let Render tit routes =
         routes
         |> List.ofSeq
         |> List.Bind disperse

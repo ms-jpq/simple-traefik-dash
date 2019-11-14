@@ -2,7 +2,7 @@ namespace STD.Controllers
 
 open STD.Env
 open STD.State
-open STD.Views.TraefikServices
+open STD.Views.Dashboard
 open DomainAgnostic
 open DomainAgnostic.Globals
 open Microsoft.AspNetCore.Mvc
@@ -17,7 +17,7 @@ type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<
     member self.Index() =
         async {
             let! s = state.Get()
-            let html = Print deps.Boxed.title s.routes.succ
+            let html = Render deps.Boxed.title s.routes.succ
             return self.Content(html, "text/html") :> ActionResult
         }
         |> Async.StartAsTask
