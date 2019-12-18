@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 
 WORKDIR /build
 
@@ -22,7 +22,7 @@ RUN dotnet publish \
 #
 #
 #
-FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0.0-alpine3.10
+FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1.0-alpine3.10
 
 WORKDIR /std
 EXPOSE 5050
