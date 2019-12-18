@@ -25,6 +25,7 @@ simple-traefik-dash:
     - STD_TRAEFIK_ENTRY_POINTS=web-secure # Required, only routes using entrypoints will be parsed
     - STD_TRAEFIK_EXIT_PORT=443 # Required, your exit port
     - STD_TITLE=🐳 # Optional, page title
+    - STD_KUBECRD_FIX=True # Optional, enable if you see <ns>-name-<randomstring> with in Kubernetes
   volumes:
     - ./more.csv:/std/more-routes/more.csv # Optional - CSV Columns: name, uri
     - ./ignore.csv:/std/ignore-routes/ignore.csv # Optional - CSV Column: name

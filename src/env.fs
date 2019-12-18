@@ -14,7 +14,8 @@ module Env =
           traefikAPI: Uri
           entryPoints: string Set
           exitPort: int
-          title: string }
+          title: string
+          kubCRD: bool }
 
 
     let private prefix = sprintf "%s_%s" ENVPREFIX
@@ -52,6 +53,10 @@ module Env =
         |> Option.bind Parse.Int
         |> required "TRAEFIK_EXIT_PORT"
 
+    let private pKubCRD find =
+        find (prefix "KUBECRD_FIX")
+        |> Option.bind Parse.Bool
+        |> Option.Recover false
 
     let private pTitle find = find (prefix "TITLE") |> Option.Recover DEFAULTTITLE
 
@@ -62,4 +67,5 @@ module Env =
           traefikAPI = pAPI find
           entryPoints = pEntryPoints find
           exitPort = pExitPort find
-          title = pTitle find }
+          title = pTitle find
+          kubCRD = pKubCRD find }
