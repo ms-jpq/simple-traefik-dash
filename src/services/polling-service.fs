@@ -24,7 +24,12 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
 
     let wait = NewTicker POLLINGRATE
 
-    let parse = materialize deps.Boxed.exitPort deps.Boxed.entryPoints
+    let parseOpts =
+        { exitPort = deps.Boxed.exitPort
+          entryPoints = deps.Boxed.entryPoints
+          fixKubeCRD = deps.Boxed.fixKubCRD }
+
+    let parse = materialize parseOpts
 
     let poll _ =
         async {

@@ -15,7 +15,7 @@ module Env =
           entryPoints: string Set
           exitPort: int
           title: string
-          kubCRD: bool }
+          fixKubCRD: bool }
 
 
     let private prefix = sprintf "%s_%s" ENVPREFIX
@@ -68,4 +68,4 @@ module Env =
           entryPoints = pEntryPoints find
           exitPort = pExitPort find
           title = pTitle find
-          kubCRD = pKubCRD find }
+          fixKubCRD = pKubCRD find }

@@ -7,6 +7,11 @@ open System
 
 module Traefik =
 
+    type ParseOpts =
+        { exitPort: int
+          entryPoints: string Set
+          fixKubeCRD: bool }
+
     type RawRoute =
         { name: string
           enabled: bool
@@ -63,11 +68,11 @@ module Traefik =
                 let (n, l) = locate r.name
 
                 let protocol =
-                    if r.tls then "https"
-                    else "http"
+                    if r.tls then "https" else "http"
 
                 let uris =
-                    c |> Seq.map (fun s -> sprintf "%s://%s:%d/%s" protocol s.host port (s.pathPrefix.TrimStart '/'))
+                    c
+                    |> Seq.map (fun s -> sprintf "%s://%s:%d/%s" protocol s.host port (s.pathPrefix.TrimStart '/'))
                 { name = n
                   location = l
                   uris = uris })
@@ -82,9 +87,9 @@ module Traefik =
 
         succ, fail
 
-    let materialize port using json =
+    let materialize (opts: ParseOpts) json =
         result {
-            let! (good, bad) = parse using json
-            let (succ, fail) = bin port good bad
+            let! (good, bad) = parse opts.entryPoints json
+            let (succ, fail) = bin opts.exitPort good bad
             return succ, fail
         }
