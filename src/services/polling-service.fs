@@ -12,7 +12,6 @@ open Microsoft.Extensions.Logging
 open DomainAgnostic.Globals
 open Microsoft.Extensions.Hosting
 open System.Net.Http
-open System.Security.Authentication
 
 
 type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>, state: GlobalVar<State>) =
@@ -20,8 +19,9 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
 
     let client =
         let handler = new HttpClientHandler()
-        handler.SslProtocols <-
-            SslProtocols.None ||| SslProtocols.Tls ||| SslProtocols.Tls11 ||| SslProtocols.Tls12 ||| SslProtocols.Tls13
+        // Disable this, and you will need vaild SSL certs for probably an internal endpoint
+        handler.ServerCertificateCustomValidationCallback <-
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         let c = new HttpClient(handler)
         c.Timeout <- REQTIMEOUT
         c

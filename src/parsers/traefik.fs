@@ -89,7 +89,7 @@ module Traefik =
 
     let pName (opts: ParseOpts) (name: string, location) =
         match (opts.fixKubeCRD, location) with
-        | (true, "kubernetescrd") ->
+        | (true, "@kubernetescrd") ->
             let parts =
                 name.Split("-")
                 |> Seq.ofArray
