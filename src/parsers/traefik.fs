@@ -61,11 +61,11 @@ module Traefik =
         fullid.Substring(0, idx), fullid.Substring(idx, fullid.Length - idx)
 
 
-    let bin port (good: (RawRoute * Path seq) seq) (bad: (RawRoute * string) seq) =
+    let bin pName port (good: (RawRoute * Path seq) seq) (bad: (RawRoute * string) seq) =
         let succ =
             good
             |> Seq.map (fun (r, c) ->
-                let (n, l) = locate r.name
+                let (n, l) = locate r.name |> pName
 
                 let protocol =
                     if r.tls then "https" else "http"
@@ -80,16 +80,29 @@ module Traefik =
         let fail =
             bad
             |> Seq.map (fun (r, c) ->
-                let (n, l) = locate r.name
+                let (n, l) = locate r.name |> pName
                 { name = n
                   location = l
                   reason = c })
 
         succ, fail
 
+    let pName (opts: ParseOpts) (name: string, location) =
+        match (opts.fixKubeCRD, location) with
+        | (true, "kubernetescrd") ->
+            let parts =
+                name.Split("-")
+                |> Seq.ofArray
+                |> Seq.SkipFront 1
+                |> Seq.SkipBack 1
+            let newName = String.Join("-", parts)
+            (newName, location)
+        | _ -> (name, location)
+
     let materialize (opts: ParseOpts) json =
         result {
+            let nameP = pName opts
             let! (good, bad) = parse opts.entryPoints json
-            let (succ, fail) = bin opts.exitPort good bad
+            let (succ, fail) = bin nameP opts.exitPort good bad
             return succ, fail
         }

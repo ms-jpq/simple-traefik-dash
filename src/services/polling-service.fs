@@ -12,13 +12,17 @@ open Microsoft.Extensions.Logging
 open DomainAgnostic.Globals
 open Microsoft.Extensions.Hosting
 open System.Net.Http
+open System.Security.Authentication
 
 
 type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>, state: GlobalVar<State>) =
     inherit BackgroundService()
 
     let client =
-        let c = new HttpClient()
+        let handler = new HttpClientHandler()
+        handler.SslProtocols <-
+            SslProtocols.None ||| SslProtocols.Tls ||| SslProtocols.Tls11 ||| SslProtocols.Tls12 ||| SslProtocols.Tls13
+        let c = new HttpClient(handler)
         c.Timeout <- REQTIMEOUT
         c
 
