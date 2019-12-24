@@ -8,7 +8,9 @@ open STD.Consts
 
 module Dashboard =
 
-    let Page tit bdy =
+    let css = sprintf "body { background-image: url(%s); }"
+
+    let Page background tit bdy =
         html []
             [ head []
                   [ meta [ _charset "utf-8" ]
@@ -18,6 +20,10 @@ module Dashboard =
                     link
                         [ _rel "stylesheet"
                           _href "site.css" ]
+                    style []
+                        [ background
+                          |> css
+                          |> str ]
                     script [ _src "script.js" ] []
                     title [] [ str tit ] ]
               body [] bdy ]
@@ -49,10 +55,10 @@ module Dashboard =
         | u -> u |> List.mapi (fun i u -> sprintf "%s-%d" n i |> Route u)
 
 
-    let Render tit routes =
+    let Render background tit routes =
         routes
         |> List.ofSeq
         |> List.Bind disperse
         |> Layout
-        |> Page tit
+        |> Page background tit
         |> renderHtmlDocument

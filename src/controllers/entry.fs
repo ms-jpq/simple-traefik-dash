@@ -17,7 +17,7 @@ type Entry(logger: ILogger<Entry>, deps: Container<Variables>, state: GlobalVar<
     member self.Index() =
         async {
             let! s = state.Get()
-            let html = Render deps.Boxed.title s.routes.succ
+            let html = Render deps.Boxed.background deps.Boxed.title s.routes.succ
             return self.Content(html, "text/html") :> ActionResult
         }
         |> Async.StartAsTask

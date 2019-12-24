@@ -3,6 +3,7 @@ namespace STD
 
 open DomainAgnostic
 open Microsoft.Extensions.Logging
+open Microsoft.AspNetCore.Http
 open System
 open Consts
 
@@ -11,11 +12,13 @@ module Env =
     type Variables =
         { logLevel: LogLevel
           port: int
+          baseUri: PathString
           traefikAPI: Uri
           entryPoints: string Set
           exitPort: int
           title: string
-          fixKubCRD: bool }
+          fixKubCRD: bool
+          background: string }
 
 
     let private prefix = sprintf "%s_%s" ENVPREFIX
@@ -58,14 +61,24 @@ module Env =
         |> Option.bind Parse.Bool
         |> Option.Recover false
 
+    let private pBaseUri find =
+        let parse = Result.New(fun (s: string) -> PathString("/" + s.Trim('/')))
+        find (prefix "PATH_PREFIX")
+        |> Option.bind (parse >> Option.FromResult)
+        |> Option.Recover(PathString("/"))
+
+    let private pBackground find = find (prefix "BACKGROUND") |> Option.Recover("background.png")
+
     let private pTitle find = find (prefix "TITLE") |> Option.Recover DEFAULTTITLE
 
     let Opts() =
         let find = ENV() |> flip Map.tryFind
         { logLevel = pLog find
           port = pPort find
+          baseUri = pBaseUri find
           traefikAPI = pAPI find
           entryPoints = pEntryPoints find
           exitPort = pExitPort find
           title = pTitle find
-          fixKubCRD = pKubCRD find }
+          fixKubCRD = pKubCRD find
+          background = pBackground find }

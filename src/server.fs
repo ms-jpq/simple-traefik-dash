@@ -25,17 +25,23 @@ module Server =
         services.AddHostedService<PollingService>() |> ignore
         services.AddControllers() |> ignore
 
-    let private confApp (app: IApplicationBuilder) =
+
+    let private confApp baseUri (app: IApplicationBuilder) =
         app.UseStatusCodePages().UseDeveloperExceptionPage() |> ignore
+        app.UsePathBase(baseUri) |> ignore
         app.UseStaticFiles() |> ignore
-        app.UseRouting().UseEndpoints(fun ep -> ep.MapControllers() |> ignore) |> ignore
+        app.UseRouting() |> ignore
+        app.UseCors() |> ignore
+        app.UseEndpoints(fun ep -> ep.MapControllers() |> ignore) |> ignore
+
 
     let private confWebhost deps gloabls (webhost: IWebHostBuilder) =
         webhost.UseWebRoot(RESOURCESDIR) |> ignore
         webhost.UseKestrel() |> ignore
         webhost.UseUrls(sprintf "http://0.0.0.0:%d" deps.port) |> ignore
         webhost.ConfigureServices(confServices deps gloabls) |> ignore
-        webhost.Configure(Action<IApplicationBuilder> confApp) |> ignore
+        webhost.Configure(Action<IApplicationBuilder>(confApp deps.baseUri)) |> ignore
+
 
     let Build<'D> (deps: Variables) (globals: GlobalVar<'D>) =
         let host = Host.CreateDefaultBuilder()
