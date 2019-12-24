@@ -24,8 +24,11 @@ simple-traefik-dash:
     - STD_TRAEFIK_API=http://traefik:8080/ # Required, make sure you can actually talk to Traefik
     - STD_TRAEFIK_ENTRY_POINTS=web-secure # Required, only routes using entrypoints will be parsed
     - STD_TRAEFIK_EXIT_PORT=443 # Required, your exit port
-    - STD_TITLE=🐳 # Optional, page title
     - STD_KUBECRD_FIX=True # Optional, enable if you see <ns>-name-<randomstring> with in Kubernetes
+
+    - STD_TITLE=🐳 # Optional, page title
+    - STD_BACKGROUND=https://... # Optional, changes the background image
+    - STD_PATH_PREFIX=/std # Optional, for reverse proxy
   volumes:
     - ./more.csv:/std/more-routes/more.csv # Optional - CSV Columns: name, uri
     - ./ignore.csv:/std/ignore-routes/ignore.csv # Optional - CSV Column: name
@@ -44,5 +47,3 @@ i.e.
 You can customize all you want! `js`, `css`, `images`, everything!
 
 Simply override the files under `/std/views`, all the static content will be served
-
-**Background Image** - Mount another `.png` file to `/std/views/background.png`
