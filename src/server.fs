@@ -21,7 +21,8 @@ module Server =
 
 
     let private confServices deps (globals: GlobalVar<'D>) (services: IServiceCollection) =
-        services.AddSingleton(Container deps).AddSingleton(globals) |> ignore
+        services.AddSingleton(Container deps) |> ignore
+        services.AddSingleton(globals) |> ignore
         services.AddHostedService<PollingService>() |> ignore
         services.AddControllers() |> ignore
 
