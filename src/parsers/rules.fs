@@ -145,7 +145,7 @@ module Rules =
             |> Option.map (fun h ->
                 { host = h
                   pathPrefix = path })
-            |> Result.FromOptional "Missing host(...)"
+            |> Result.OfOptional "Missing host(...)"
 
         (Result.Ok Map.empty, route)
         ||> Seq.fold (fun m c -> (Result.bind (accum c) m))
@@ -171,7 +171,7 @@ module Rules =
         let parse = expr |>> assemble
         rule
         |> run parse
-        |> Result.FromParseResult
+        |> Result.OfParseResult
 
     let UserPrint rule =
         let res = proutes rule

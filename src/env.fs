@@ -64,7 +64,7 @@ module Env =
     let private pBaseUri find =
         let parse = Result.New(fun (s: string) -> PathString("/" + s.Trim('/')))
         find (prefix "PATH_PREFIX")
-        |> Option.bind (parse >> Option.FromResult)
+        |> Option.bind (parse >> Option.OfResult)
         |> Option.Recover(PathString("/"))
 
     let private pBackground find = find (prefix "BACKGROUND") |> Option.Recover("background.png")
