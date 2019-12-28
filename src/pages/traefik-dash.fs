@@ -24,7 +24,10 @@ module Dashboard =
                         [ background
                           |> css
                           |> str ]
-                    script [ _src "script.js" ] []
+                    script
+                        [ _async
+                          _defer
+                          _src "script.js" ] []
                     title [] [ str tit ] ]
               body [] bdy ]
 
