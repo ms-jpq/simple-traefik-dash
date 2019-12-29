@@ -4,6 +4,7 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   background-color: aliceblue;
+  overflow: hidden;
 }
 
 a {
