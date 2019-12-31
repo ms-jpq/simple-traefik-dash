@@ -9,11 +9,11 @@ module Consts =
 
     let CONTENTROOT = Directory.GetCurrentDirectory()
 
-    let ROUTESDIR = Path.Combine(CONTENTROOT, "more-routes")
+    let ROUTESDIR = Path.Combine(CONTENTROOT, "more-routes/")
 
-    let BLOCKSDIR = Path.Combine(CONTENTROOT, "ignore-routes")
+    let BLOCKSDIR = Path.Combine(CONTENTROOT, "ignore-routes/")
 
-    let RESOURCESDIR = Path.Combine(CONTENTROOT, "views")
+    let RESOURCESDIR = Path.Combine(CONTENTROOT, "views/")
 
 
     let private readme =
