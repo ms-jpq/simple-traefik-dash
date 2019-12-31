@@ -28,7 +28,8 @@ module Server =
 
 
     let private confApp baseUri (app: IApplicationBuilder) =
-        app.UseStatusCodePages().UseDeveloperExceptionPage() |> ignore
+        app.UseStatusCodePages() |> ignore
+        app.UseDeveloperExceptionPage() |> ignore
         app.UsePathBase(baseUri) |> ignore
         app.UseStaticFiles() |> ignore
         app.UseRouting() |> ignore
