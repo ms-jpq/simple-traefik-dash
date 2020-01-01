@@ -45,7 +45,7 @@ module Dashboard =
         let big =
             name
             |> Seq.truncate 2
-            |> Seq.map ToString
+            |> Seq.map string
             |> String.concat ""
 
         figure []
