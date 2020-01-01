@@ -4,9 +4,6 @@ services:
   #
   # This file is used for development
   #
-  # Use file below for reference
-  # https://github.com/ms-jpq/simple-traefik-dash/tree/master/example
-  #
   std:
     build: .
     container_name: std
