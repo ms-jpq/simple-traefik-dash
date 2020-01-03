@@ -47,3 +47,9 @@ i.e.
 You can customize all you want! `js`, `css`, `images`, everything!
 
 Simply override the files under `/std/views`, all the static content will be served
+
+## Sister
+
+Check out my sister: [Simple Traefik Identity](https://ms-jpq.github.io/simple-traefik-identity/)
+
+Simple & Configurable -- SSO, for Traefik.
