@@ -36,7 +36,7 @@ module Dashboard =
             [ main [] contents
               footer []
                   [ a [ _href "status" ] [ str "API" ]
-                    a [ _href PROJECTURI ] [ str "github" ] ] ]
+                    a [ _href PROJECTURI ] [ str "★ github ★" ] ] ]
         |> List.singleton
 
     let Route uri (name: string) =
