@@ -37,7 +37,9 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
 
     let poll _ =
         async {
-            let! traefik = client.GetStringAsync(deps.Boxed.traefikAPI) |> Async.AwaitTask
+            let! traefik = deps.Boxed.traefikAPI
+                           |> client.GetStringAsync
+                           |> Async.AwaitTask
             let (r1, ignore, errs) = pCSV()
             let (r2, failed) = parse traefik |> Result.ForceUnwrap
             let ignoring = Set ignore
