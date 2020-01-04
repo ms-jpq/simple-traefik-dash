@@ -10,8 +10,7 @@ open System.IO
 module CSV =
 
     let read dir =
-        if Directory.Exists(dir) then Directory.EnumerateFiles(dir)
-        else Seq.empty
+        if Directory.Exists(dir) then Directory.EnumerateFiles(dir) else Seq.empty
         |> Seq.filter (fun f -> f.EndsWith(".csv"))
         |> Seq.map (fun f -> (f, f |> (File.ReadAllText >> CsvFile.Parse)))
 
@@ -35,16 +34,14 @@ module CSV =
 
 
     let pCSV() =
-        async {
-            let (routeCSVs, e1) =
-                read ROUTESDIR
-                |> Seq.Bind parseAdditional
-                |> Result.Discriminate
+        let (routeCSVs, e1) =
+            read ROUTESDIR
+            |> Seq.Bind parseAdditional
+            |> Result.Discriminate
 
-            let (blockCSVs, e2) =
-                read BLOCKSDIR
-                |> Seq.Bind parseIgnore
-                |> Result.Discriminate
+        let (blockCSVs, e2) =
+            read BLOCKSDIR
+            |> Seq.Bind parseIgnore
+            |> Result.Discriminate
 
-            return (routeCSVs, blockCSVs, e1 ++ e2)
-        }
+        (routeCSVs, blockCSVs, e1 ++ e2)
