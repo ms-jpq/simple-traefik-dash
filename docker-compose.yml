@@ -14,6 +14,7 @@ services:
       - STD_KUBECRD_FIX=${STD_KUBECRD_FIX}
       - STD_BACKGROUND=${STD_BACKGROUND}
       - STD_PATH_PREFIX=${STD_PATH_PREFIX}
+      - STD_POLL_RATE=${STD_POLL_RATE}
     ports:
       - 5050:5050
     volumes:

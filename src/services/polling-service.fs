@@ -26,7 +26,7 @@ type PollingService(logger: ILogger<PollingService>, deps: Container<Variables>,
         c.Timeout <- REQTIMEOUT
         c
 
-    let wait = NewTicker POLLINGRATE
+    let wait = NewTicker deps.Boxed.pollingRate
 
     let parseOpts =
         { exitPort = deps.Boxed.exitPort

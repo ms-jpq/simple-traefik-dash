@@ -18,6 +18,7 @@ module Entry =
             echo README
 
             let deps = Opts()
+            echo deps
 
             use state =
                 new GlobalVar<State>({ lastupdate = None

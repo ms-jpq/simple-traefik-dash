@@ -12,6 +12,7 @@ module Env =
     type Variables =
         { logLevel: LogLevel
           port: int
+          pollingRate: TimeSpan
           baseUri: PathString
           traefikAPI: Uri
           entryPoints: string Set
@@ -38,6 +39,12 @@ module Env =
         find (prefix "PORT")
         |> Option.bind Parse.Int
         |> Option.Recover WEBSRVPORT
+
+    let private pPolling find =
+        find (prefix "POLL_RATE")
+        |> Option.bind Parse.Float
+        |> Option.map TimeSpan.FromSeconds
+        |> Option.Recover POLLINGRATE
 
     let private pAPI find =
         find (prefix "TRAEFIK_API")
@@ -75,6 +82,7 @@ module Env =
         let find = ENV() |> flip Map.tryFind
         { logLevel = pLog find
           port = pPort find
+          pollingRate = pPolling find
           baseUri = pBaseUri find
           traefikAPI = pAPI find
           entryPoints = pEntryPoints find
