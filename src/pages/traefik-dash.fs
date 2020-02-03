@@ -8,7 +8,7 @@ open STD.Consts
 
 module Dashboard =
 
-    let css = sprintf "body { background-image: url(%s); }"
+    let css = sprintf "body { --background-image: url(%s); }"
 
     let Page background tit bdy =
         html []
@@ -17,13 +17,13 @@ module Dashboard =
                     meta
                         [ _name "viewport"
                           _content "width=device-width, initial-scale=1" ]
-                    link
-                        [ _rel "stylesheet"
-                          _href "site.css" ]
                     style []
                         [ background
                           |> css
                           |> str ]
+                    link
+                        [ _rel "stylesheet"
+                          _href "site.css" ]
                     script
                         [ _async
                           _defer

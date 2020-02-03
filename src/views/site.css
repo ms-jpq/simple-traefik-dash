@@ -1,4 +1,5 @@
 body {
+  background-image: var(--background-image);
   min-height: 100vh;
   max-height: 100%;
   background-repeat: no-repeat;
