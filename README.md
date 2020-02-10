@@ -1,6 +1,6 @@
 # [Simple Traefik Dash](https://ms-jpq.github.io/simple-traefik-dash/)
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/msjpq/simple-traefik-dash.svg)](https://hub.docker.com/r/msjpq/simple-traefik-dash.svg/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/msjpq/simple-traefik-dash.svg)](https://hub.docker.com/r/msjpq/simple-traefik-dash/)
 
 **Zero conf** service dashboard for [Traefik v2](https://traefik.io/) reverse proxy
 
