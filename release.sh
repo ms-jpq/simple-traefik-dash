@@ -3,8 +3,12 @@
 set -eu
 set -o pipefail
 
-# docker-compose up -d --build
+IMAGE="msjpq/simple-traefik-dash:latest"
 
-docker tag $1 msjpq/simple-traefik-dash:latest
+cd "$(dirname "$0")"
+docker build -t "$IMAGE" .
 
-docker push msjpq/simple-traefik-dash:latest
+if [[ $# -gt 0 ]]
+then
+  docker push "$IMAGE"
+fi
