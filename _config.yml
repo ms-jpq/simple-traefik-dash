@@ -1,3 +1,11 @@
 theme: jekyll-theme-cayman
 
 title: Simple Traefik Dash
+
+showcase: True
+
+desc: >-
+  Zero conf service dashboard for Traefik v2
+
+images:
+  - https://github.com/ms-jpq/simple-traefik-dash/raw/master/src/views/background.png
