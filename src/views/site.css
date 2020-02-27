@@ -1,4 +1,6 @@
 body {
+  padding: 0;
+  margin: 0;
   background-image: var(--background-image);
   min-height: 100vh;
   max-height: 100%;
