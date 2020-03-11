@@ -6,7 +6,7 @@
 
 Parses Traefik's [Routers](https://docs.traefik.io/routing/overview/) and generates all deterministic routes
 
-Tested for Docker, Docker Swarm, and Kubernetes!
+`Tested for Docker, Docker Swarm, and Kubernetes!`
 
 ## Screenshot
 
