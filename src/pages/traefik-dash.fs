@@ -25,8 +25,7 @@ module Dashboard =
                         [ _rel "stylesheet"
                           _href "site.css" ]
                     script
-                        [ _async
-                          _defer
+                        [ _defer
                           _src "script.js" ] []
                     title [] [ str tit ] ]
               body [] bdy ]
