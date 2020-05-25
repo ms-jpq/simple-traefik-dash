@@ -1,3 +1,4 @@
+/.git/
 .DS_Store
 obj
 bin
@@ -18,4 +19,3 @@ out
 npm-debug.log
 ./ignore-routes
 ./more-routes
-
