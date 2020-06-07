@@ -3,4 +3,4 @@ FParsec
 FSharp.Data
 Thoth.Json.Net
 
-File: GiraffeViewEngine.fs
+File: src/Giraffe/GiraffeViewEngine.fs giraffe-fsharp/Giraffe
