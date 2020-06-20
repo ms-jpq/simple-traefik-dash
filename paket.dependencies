@@ -5,5 +5,6 @@ nuget FParsec
 nuget FSharp.Data
 nuget Thoth.Json.Net
 
-github ms-jpq/fda
+github ms-jpq/fda:94e2eb51c38a2ca296513759ff82da672d3020d5
 github giraffe-fsharp/Giraffe:4c1e553941e382907bdc279257d1b8549ebd79c8
+
