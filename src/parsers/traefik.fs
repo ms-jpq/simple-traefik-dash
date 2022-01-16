@@ -97,7 +97,8 @@ module Traefik =
                 |> Seq.SkipBack 1
             let newName = String.Join("-", parts)
             (newName, location)
-        | _ -> (name, location)
+        | _ -> 
+            (Regex.Replace(name, "^https?-", ""), location)
 
     let materialize (opts: ParseOpts) json =
         result {
