@@ -4,6 +4,7 @@ open DomainAgnostic
 open Rules
 open Thoth.Json.Net
 open System
+open System.Text.RegularExpressions
 
 module Traefik =
 
